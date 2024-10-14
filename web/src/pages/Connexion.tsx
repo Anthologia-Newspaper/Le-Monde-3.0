@@ -25,13 +25,13 @@ const Connexion = (): JSX.Element => {
 		<>
 			<Input
 				id="connexion-email-input"
-				variant="primary-1"
+				variant="primary"
 				placeholder="e-mail ou nom d'utilisateur"
 				onChange={(e) => setLoginInput(e.target.value)}
 			/>
 			<PwdInput
 				inputId="connexion-pwd-input"
-				variant="primary-1"
+				variant="primary"
 				placeholder="mot de passe"
 				onChange={(e) => setPwdInut(e.target.value)}
 			/>

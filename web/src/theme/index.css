@@ -8,16 +8,11 @@ html {
 }
 
 body {
-  background-color: #111111 !important;
   min-height: 100% !important;
 }
 
 #root {
   min-height: 100vh !important;
-}
-
-p {
-  color: #FFFFFF !important;
 }
 
 a {
