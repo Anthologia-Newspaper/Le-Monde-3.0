@@ -153,7 +153,7 @@ const Private = ({ children }: PrivateProps): JSX.Element => {
 	const collapseNavBar = useBreakpointValue({ base: true, xl: false });
 
 	return (
-		<HStack position="relative" align="start" h="100vh !important" spacing="0px">
+		<HStack position="relative" align="start" h="100vh" spacing="0px">
 			{collapseNavBar ? (
 				<>
 					<Button

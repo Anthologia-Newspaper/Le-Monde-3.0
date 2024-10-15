@@ -1,98 +1,103 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, HStack, Input, Select, Stack, Textarea, VStack } from '@chakra-ui/react';
+import { useEffect, useMemo, useRef } from 'react';
+import { VStack } from '@chakra-ui/react';
 
-import { useUIContext } from 'contexts/ui';
-import { Topic } from 'types/topic';
+import YooptaEditor, { createYooptaEditor, YooptaContentValue } from '@yoopta/editor';
+import { plainText } from '@yoopta/exports';
+import Paragraph from '@yoopta/paragraph';
+import Blockquote from '@yoopta/blockquote';
+import Embed from '@yoopta/embed';
+import Link from '@yoopta/link';
+import Callout from '@yoopta/callout';
+import Image from '@yoopta/image';
+import Video from '@yoopta/video';
+import File from '@yoopta/file';
+import { NumberedList, BulletedList, TodoList } from '@yoopta/lists';
+import { Bold, Italic, CodeMark, Underline, Strike, Highlight } from '@yoopta/marks';
+import { HeadingOne, HeadingThree, HeadingTwo } from '@yoopta/headings';
+import Code from '@yoopta/code';
+import Table from '@yoopta/table';
+import Divider from '@yoopta/divider';
+import ActionMenuList, { DefaultActionMenuRender } from '@yoopta/action-menu-list';
+import Toolbar, { DefaultToolbarRender } from '@yoopta/toolbar';
+import LinkTool, { DefaultLinkToolRender } from '@yoopta/link-tool';
 
-const Editor = (): JSX.Element => {
-	const navigate = useNavigate();
-	const ui = useUIContext();
-	const [topics, setTopics] = useState<Topic[]>([]);
-	const [title, setTitle] = useState('');
-	const [topic, setTopic] = useState('');
-	const [content, setContent] = useState('');
+const plugins = [
+	Paragraph,
+	Table,
+	Divider,
+	HeadingOne,
+	HeadingTwo,
+	HeadingThree,
+	Blockquote,
+	Callout,
+	NumberedList,
+	BulletedList,
+	TodoList,
+	Code,
+	Link,
+	Embed,
+	Image,
+	Video,
+	File,
+];
 
-	const uiCreateArticle = async (draft: boolean) => {
-		await ui.online.articles.create(
-			{
-				title,
-				content,
-				topic: topics.find((t) => t.name === topic)!.id,
-				draft,
-			},
-			(id: number) => {
-				if (!draft) {
-					navigate(`/articles/${id}`);
-				} else {
-					navigate(`/brouillons`);
-				}
-			},
-		);
+const TOOLS = {
+	ActionMenu: {
+		render: DefaultActionMenuRender,
+		tool: ActionMenuList,
+	},
+	Toolbar: {
+		render: DefaultToolbarRender,
+		tool: Toolbar,
+	},
+	LinkTool: {
+		render: DefaultLinkToolRender,
+		tool: LinkTool,
+	},
+};
+
+const MARKS = [Bold, Italic, CodeMark, Underline, Strike, Highlight];
+
+const Editor = ({
+	setValue,
+	value,
+	readOnly = false,
+}: {
+	setValue?: ({ stringify, serialized }: { stringify: string; serialized: string }) => void;
+	value?: YooptaContentValue;
+	readOnly?: boolean;
+}): JSX.Element => {
+	const editor = useMemo(() => createYooptaEditor(), []);
+	const selectionRef = useRef(null);
+
+	const handleChange = (newValue: YooptaContentValue) => {
+		if (!setValue || readOnly) return;
+		const serialized = plainText.serialize(editor, newValue);
+		setValue({ stringify: JSON.stringify(newValue), serialized });
 	};
 
 	useEffect(() => {
-		ui.online.topics.search.all(setTopics);
-	}, []);
+		editor.on('change', handleChange);
+		return () => {
+			// [IMPORTANT] - unsubscribe from event on unmount
+			editor.off('change', handleChange);
+		};
+	}, [editor]);
 
 	return (
-		<VStack w="100%" h="100%" spacing="8px">
-			<HStack w="100%">
-				<Input
-					id="write-title-input"
-					variant="primary-1"
-					placeholder="Titre du nouvel article"
-					onChange={(e) => setTitle(e.target.value)}
-					value={title}
-				/>
-				<Select
-					w="25%"
-					id="write-topic-input"
-					variant="primary-1"
-					onChange={(e) => setTopic(e.target.value)}
-					value={topic}
-					sx={{
-						'> option': {
-							background: '#212529',
-						},
-					}}
-				>
-					{topics.map((t, index) => (
-						<option key={index}>{t.name}</option>
-					))}
-				</Select>
-			</HStack>
-			<Textarea
-				id="write-content-textarea"
-				variant="primary-1"
-				placeholder="Contenu du nouvel article"
-				flexGrow="2"
-				minH="240px"
-				onChange={(e) => setContent(e.target.value)}
-				value={content}
+		<VStack w="100%" maxW="720px" ref={selectionRef}>
+			<YooptaEditor
+				width="100%"
+				selectionBoxRoot={selectionRef}
+				editor={editor}
+				plugins={plugins}
+				tools={TOOLS}
+				marks={MARKS}
+				autoFocus
+				value={value}
+				readOnly={readOnly}
 			/>
-			<Button
-				id="write-publish-btn"
-				variant="primary-yellow"
-				onClick={() => uiCreateArticle(false)}
-				isDisabled={title === '' || topic === '' || content === ''}
-			>
-				Publier
-			</Button>
-			<Stack w="100%" direction={{ base: 'column', md: 'row' }}>
-				<Button id="write-pre-visualize-btn" variant="primary-blue" isDisabled>
-					Pré-visualisez votre article
-				</Button>
-				<Button
-					id="write-save-draft-btn"
-					variant="primary-purple"
-					onClick={() => uiCreateArticle(true)}
-					isDisabled={title === '' || topic === '' || content === ''}
-				>
-					Enregistrer dans les brouillons
-				</Button>
-			</Stack>
 		</VStack>
 	);
 };

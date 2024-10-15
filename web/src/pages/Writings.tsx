@@ -8,6 +8,8 @@ import { FaFilter, FaSort } from 'react-icons/fa';
 import { FaSortDown, FaSortUp } from 'react-icons/fa6';
 import { PiArticleNyTimesBold } from 'react-icons/pi';
 import { RiDraftFill, RiFilterOffLine } from 'react-icons/ri';
+import { FcLike } from 'react-icons/fc';
+import { FaEye } from 'react-icons/fa';
 
 import { Topic } from 'types/topic';
 import { Article } from 'types/article';
@@ -83,19 +85,10 @@ const Writings = (): JSX.Element => {
 			</HStack>
 			<VStack w="100%" align="start">
 				<HStack flexWrap="wrap">
-					<Button variant="secondary-yellow" onClick={() => setFilter(!filter)}>
-						<Icon as={filter ? FaFilter : RiFilterOffLine} boxSize={4} mr="8px" />
-						<Text variant="p" color="primary.yellow !important">
-							Filtrer
-						</Text>
+					<Button onClick={() => setFilter(!filter)}>
+						<Icon as={filter ? FaFilter : RiFilterOffLine} />
 					</Button>
 					<Button
-						bg="gray.900"
-						_hover={{
-							opacity: '80%',
-							transition: 'ease 0.5s',
-						}}
-						px="24px"
 						onClick={() => {
 							setSortViews('NONE');
 							if (sortLikes === 'NONE') setSortLikes('UP');
@@ -109,15 +102,9 @@ const Writings = (): JSX.Element => {
 							color="white"
 							mr="8px"
 						/>
-						<Text variant="p">j'aimes</Text>
+						<FcLike />
 					</Button>
 					<Button
-						bg="gray.900"
-						px="24px"
-						_hover={{
-							opacity: '80%',
-							transition: 'ease 0.5s',
-						}}
 						onClick={() => {
 							setSortLikes('NONE');
 							if (sortViews === 'NONE') setSortViews('UP');
@@ -131,54 +118,24 @@ const Writings = (): JSX.Element => {
 							color="white"
 							mr="8px"
 						/>
-						<Text variant="p">vues</Text>
+						<FaEye />
 					</Button>
-					<Button
-						bg="gray.900"
-						_hover={{
-							opacity: '80%',
-							transition: 'ease 0.5s',
-						}}
-						_active={{
-							bg: 'gray.900',
-						}}
-						px="24px"
-						onClick={() => setShowPublications(!showPublications)}
-					>
+					<Button onClick={() => setShowPublications(!showPublications)}>
 						<Icon as={PiArticleNyTimesBold} boxSize={showPublications ? 6 : 5} color="white" mr="8px" />
-						<Text variant="p" fontWeight={showPublications ? 'extra-bold' : 'light'}>
-							Publications
-						</Text>
 					</Button>
-					<Button
-						bg="gray.900"
-						_hover={{
-							opacity: '80%',
-							transition: 'ease 0.5s',
-						}}
-						_active={{
-							bg: 'gray.900',
-						}}
-						px="24px"
-						onClick={() => setShowDrafts(!showDrafts)}
-					>
+					<Button onClick={() => setShowDrafts(!showDrafts)}>
 						<Icon as={RiDraftFill} boxSize={showDrafts ? 5 : 4} color="white" mr="8px" />
-						<Text variant="p" fontWeight={showDrafts ? 'extra-bold' : 'light'}>
-							Brouillons
-						</Text>
 					</Button>
 				</HStack>
 				{filter && (
 					<Stack direction={{ xs: 'column', sm: 'row' }} w="100%" justify="flex-start">
 						<SearchInput
-							variant="primary-1"
 							w={{ xs: '100%', sm: '320px' }}
 							placeholder="..."
 							value={search}
 							onChange={(e) => setSearch(e.target.value)}
 						/>
 						<Select
-							variant="primary-1"
 							w={{ xs: '100%', sm: '222px' }}
 							minW={{ xs: 'auto', md: '200px' }}
 							sx={{
