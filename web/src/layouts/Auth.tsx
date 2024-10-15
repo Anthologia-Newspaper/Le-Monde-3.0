@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import { Box, Center, Image, Text, VStack, keyframes, useColorMode } from '@chakra-ui/react';
 
 import BackgroundImage from 'theme/images/background.jpeg';
@@ -40,16 +38,10 @@ const changeColor = keyframes`
 `;
 
 const Auth = ({ children }: { children: JSX.Element }): JSX.Element => {
-	const location = useLocation();
-	const [path, setPath] = useState('');
 	const { colorMode } = useColorMode();
 
 	const animationBg = `${moveInBg} 60s linear 0s infinite alternate`;
 	const animationColor = `${changeColor} 60s linear 0s infinite alternate`;
-
-	useEffect(() => {
-		setPath(location.pathname);
-	}, [location]);
 
 	return (
 		<Box position="relative" w="100vw" h="100vh" animation={animationColor}>
@@ -69,7 +61,7 @@ const Auth = ({ children }: { children: JSX.Element }): JSX.Element => {
 			<ColorModeSwitcher zIndex="4" position="absolute" right="16px" top="16px" />
 			<Center w="100%" h="100%" position="relative" zIndex="3">
 				<VStack
-					p={{ base: '8px', lg: '80px' }}
+					p={{ base: '24px', lg: '80px' }}
 					backdropFilter="blur(56px)"
 					borderRadius="md"
 					boxShadow="0 3px 10px rgb(0 0 0 / 0.2)"
@@ -79,12 +71,7 @@ const Auth = ({ children }: { children: JSX.Element }): JSX.Element => {
 							<Text id="app-title" variant="h1" textAlign="center" color="#4bebf9 !important">
 								Anthologia
 							</Text>
-							<Text
-								id="app-description"
-								variant="p"
-								textAlign="center"
-								color="white !important"
-							>
+							<Text id="app-description" variant="p" textAlign="center" color="white !important">
 								Le journal décentralisé luttant contre la censure.
 							</Text>
 						</VStack>

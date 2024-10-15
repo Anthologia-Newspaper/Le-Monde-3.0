@@ -58,6 +58,7 @@ const semanticTokens = {
 };
 
 const styles = {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	global: (props: any) => ({
 		'html, body': {
 			bg: 'background',

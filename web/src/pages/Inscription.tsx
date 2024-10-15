@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Link as RouteLink, useNavigate } from 'react-router-dom';
-import { Button, Link } from '@chakra-ui/react';
+import { Button, Divider, Link, VStack } from '@chakra-ui/react';
 
 import { useUIContext } from 'contexts/ui';
 import FormInput from 'components/Inputs/FormInput';
@@ -47,12 +47,12 @@ const Inscription = (): JSX.Element => {
 	}, [email, username, pwd, confirmedPwd]);
 
 	return (
-		<>
+		<VStack align="center" w="100%">
 			<FormInput
 				inputId="inscription-email-input"
 				isError={email !== '' && !validation.details.email.value}
 				errorMessage={validation.details.email.message}
-				variant="primary-1"
+				variant="primary"
 				placeholder="e-mail"
 				onChange={(e) => setEmail(e.target.value)}
 			/>
@@ -60,7 +60,7 @@ const Inscription = (): JSX.Element => {
 				inputId="inscription-username-input"
 				isError={username !== '' && !validation.details.username.value}
 				errorMessage={validation.details.username.message}
-				variant="primary-1"
+				variant="primary"
 				placeholder="nom d'utilisateur"
 				onChange={(e) => setUsername(e.target.value)}
 			/>
@@ -68,7 +68,7 @@ const Inscription = (): JSX.Element => {
 				inputId="inscription-pwd-input"
 				isError={pwd !== '' && !validation.details.pwd.value}
 				errorMessage={validation.details.pwd.message}
-				variant="primary-1"
+				variant="primary"
 				placeholder="mot de passe"
 				onChange={(e) => setPwd(e.target.value)}
 			/>
@@ -76,13 +76,15 @@ const Inscription = (): JSX.Element => {
 				inputId="inscription-confirmed-pwd-input"
 				isError={confirmedPwd !== '' && !validation.details.confirmedPwd.value}
 				errorMessage={validation.details.confirmedPwd.message}
-				variant="primary-1"
+				variant="primary"
 				placeholder="confirmation du mot de passe"
 				onChange={(e) => setConfirmedPwd(e.target.value)}
 			/>
 			<Button
 				id="inscription-inscription-btn"
-				variant="primary-yellow"
+				variant="primary"
+				bg="#4bebf9 !important"
+				color="#000f4a"
 				isDisabled={!validation.valid}
 				onClick={async () =>
 					await ui.online.auth.sign.up({ email, username, password: pwd }, () => navigate('/bibliotheque'))
@@ -90,12 +92,12 @@ const Inscription = (): JSX.Element => {
 			>
 				Inscription
 			</Button>
-			<Link as={RouteLink} to="/connexion" w="100%">
-				<Button id="inscription-connexion-btn" variant="primary-white">
-					Connexion
-				</Button>
+			<br />
+			<Divider />
+			<Link id="inscription-connexion-txt" as={RouteLink} to="/connexion" color="white">
+				<b>Connexion</b>
 			</Link>
-		</>
+		</VStack>
 	);
 };
 

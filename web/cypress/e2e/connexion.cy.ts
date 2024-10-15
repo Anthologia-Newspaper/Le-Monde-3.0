@@ -24,7 +24,7 @@ describe('[LAYOUT] Connexion page', () => {
 	});
 
 	it('Inscription button', () => {
-		cy.get('#connexion-inscription-btn').should('contain', 'Inscription');
+		cy.get('#connexion-inscription-txt').should('contain', 'Inscription');
 	});
 });
 
@@ -34,6 +34,6 @@ describe('[LINKS] Connexion page', () => {
 	});
 
 	it('Link to inscription page', () => {
-		cy.get('#connexion-inscription-btn').click().url().should('eq', `${Cypress.config().baseUrl}/inscription`);
+		cy.get('#connexion-inscription-txt').click().url().should('eq', `${Cypress.config().baseUrl}/inscription`);
 	});
 });

@@ -8,6 +8,9 @@ const defaultInput = {
 			outlineColor: 'primary.yellow',
 			outlineOffset: '-2px',
 		},
+		_placeholder: {
+			color: 'gray.300',
+		},
 		borderRadius: 'sm',
 		padding: '8px 16px',
 		bg: 'transparent',
