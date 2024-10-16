@@ -1,7 +1,20 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Badge, HStack, Text, Tooltip, VStack } from '@chakra-ui/react';
+import {
+	Button,
+	Card,
+	CardBody,
+	CardFooter,
+	CardHeader,
+	Heading,
+	HStack,
+	Text,
+	Tooltip,
+	VStack,
+} from '@chakra-ui/react';
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
+import { FaArrowUpRightFromSquare } from 'react-icons/fa6';
+import { FcLike } from 'react-icons/fc';
 
 const AnthologyCard = ({
 	navigateUrl,
@@ -23,53 +36,50 @@ const AnthologyCard = ({
 	const navigate = useNavigate();
 
 	return (
-		<HStack
-			w="100%"
-			h="100%"
-			p={{ base: '8px', xl: '16px' }}
-			bg="gray.200"
-			borderRadius="sm"
-			justifyContent="space-between"
-			align="start"
-		>
-			<VStack align="start" spacing="0px">
-				<Badge colorScheme="green" borderRadius="xsm">
-					{nbArticles} article{nbArticles !== 1 && 's'}
-				</Badge>
-				<Text
-					variant="h6"
-					color="black !important"
-					cursor="pointer"
-					_hover={{ opacity: '0.8' }}
-					onClick={() => navigate(navigateUrl)}
-				>
-					{name}
-				</Text>
-				<Text variant="p" color="black !important">
-					{description}
-				</Text>
-			</VStack>
-			{deleteAnthology && setAnthologyToUpdate && onOpen && (
-				<HStack>
-					<Tooltip label="Modifier le marque-page">
-						<span>
-							<EditIcon
-								onClick={() => {
-									setAnthologyToUpdate();
-									onOpen();
-								}}
-								color="black"
-							/>
-						</span>
+		<Card w="100%" h="100%">
+			<CardHeader>
+				<VStack spacing="0px" align="start" w="100%">
+					<HStack justify="space-between" w="100%">
+						<Heading size="md">{name}</Heading>
+						{name === 'Favoris' && <FcLike />}
+					</HStack>
+					<Text variant="info" color="gray.400">
+						{nbArticles} article{nbArticles !== 1 && 's'}
+					</Text>
+				</VStack>
+			</CardHeader>
+			<CardBody>
+				<Text>{description}</Text>
+			</CardBody>
+			<CardFooter>
+				<HStack spacing="8px">
+					<Tooltip label="Accèder au dossier">
+						<Button onClick={() => navigate(navigateUrl)}>
+							<FaArrowUpRightFromSquare />{' '}
+						</Button>
 					</Tooltip>
-					<Tooltip label="Supprimer le marque-page">
-						<span>
-							<DeleteIcon onClick={deleteAnthology} color="black" />
-						</span>
-					</Tooltip>
+					{deleteAnthology && setAnthologyToUpdate && onOpen && (
+						<>
+							<Tooltip label="Modifier le dossier">
+								<Button
+									onClick={() => {
+										setAnthologyToUpdate();
+										onOpen();
+									}}
+								>
+									<EditIcon />
+								</Button>
+							</Tooltip>
+							<Tooltip label="Supprimer le dossier">
+								<Button onClick={deleteAnthology}>
+									<DeleteIcon />
+								</Button>
+							</Tooltip>
+						</>
+					)}
 				</HStack>
-			)}
-		</HStack>
+			</CardFooter>
+		</Card>
 	);
 };
 

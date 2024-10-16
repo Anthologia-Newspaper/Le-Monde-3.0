@@ -9,7 +9,7 @@ import { useUserContext } from 'contexts/user';
 import { useOfflineUserContext } from 'contexts/offlineUser';
 import { Article, OfflineArticle } from 'types/article';
 import SearchInput from 'components/Inputs/SearchInput';
-import ArticleCard from 'components/Cards/ArticleCard';
+import ArticleCard from 'components/Cards/ReaderArticleCard';
 import AnthologiesModal from 'components/modals/Anthologies';
 import { Anthology, OfflineAnthology } from 'types/anthology';
 
@@ -108,30 +108,30 @@ const Favorites = (): JSX.Element => {
 										// TODO: topic name
 										topic={`Topic #${article.topicId}`}
 										content={article.content}
-										actions={[
-											<Tooltip label="Ajouter à un dossier">
-												<span>
-													<FaFolderPlus
-														onClick={() => {
-															setOnlineArticleToAdd(article.id);
-															onOpen();
-														}}
-														color="white"
-													/>
-												</span>
-											</Tooltip>,
-											<Tooltip label="Supprimer des favoris">
-												<span>
-													<FcLike
-														onClick={async () =>
-															await ui.online.articles.like({ id: article.id, isLiked: true }, () =>
-																setRefresh((r) => r + 1),
-															)
-														}
-													/>
-												</span>
-											</Tooltip>,
-										]}
+										// actions={[
+										// 	<Tooltip label="Ajouter à un dossier">
+										// 		<span>
+										// 			<FaFolderPlus
+										// 				onClick={() => {
+										// 					setOnlineArticleToAdd(article.id);
+										// 					onOpen();
+										// 				}}
+										// 				color="white"
+										// 			/>
+										// 		</span>
+										// 	</Tooltip>,
+										// 	<Tooltip label="Supprimer des favoris">
+										// 		<span>
+										// 			<FcLike
+										// 				onClick={async () =>
+										// 					await ui.online.articles.like({ id: article.id, isLiked: true }, () =>
+										// 						setRefresh((r) => r + 1),
+										// 					)
+										// 				}
+										// 			/>
+										// 		</span>
+										// 	</Tooltip>,
+										// ]}
 										likes={article.likeCounter}
 										views={article.viewCounter}
 									/>
@@ -148,26 +148,26 @@ const Favorites = (): JSX.Element => {
 										// TODO: topic name ? Or nothing
 										topic={`Topic #${article.topicId}`}
 										content={article.preview || ''}
-										actions={[
-											<Tooltip label="Ajouter à un dossier">
-												<span>
-													<FaFolderPlus
-														onClick={() => {
-															setOfflineArticleToAdd(article.cid);
-															onOpen();
-														}}
-														color="white"
-													/>
-												</span>
-											</Tooltip>,
-											<Tooltip label="Supprimer des favoris">
-												<span>
-													<FcLike
-														onClick={() => ui.offline.articles.like(article.cid, true, () => setRefresh((r) => r + 1))}
-													/>
-												</span>
-											</Tooltip>,
-										]}
+										// actions={[
+										// 	<Tooltip label="Ajouter à un dossier">
+										// 		<span>
+										// 			<FaFolderPlus
+										// 				onClick={() => {
+										// 					setOfflineArticleToAdd(article.cid);
+										// 					onOpen();
+										// 				}}
+										// 				color="white"
+										// 			/>
+										// 		</span>
+										// 	</Tooltip>,
+										// 	<Tooltip label="Supprimer des favoris">
+										// 		<span>
+										// 			<FcLike
+										// 				onClick={() => ui.offline.articles.like(article.cid, true, () => setRefresh((r) => r + 1))}
+										// 			/>
+										// 		</span>
+										// 	</Tooltip>,
+										// ]}
 									/>
 								</GridItem>
 						  ))}

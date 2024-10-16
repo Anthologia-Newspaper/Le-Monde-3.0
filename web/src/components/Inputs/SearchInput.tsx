@@ -13,7 +13,7 @@ const SearchInput = ({
 	return (
 		<InputGroup size="md" w={props.w || '100%'}>
 			<InputLeftElement pointerEvents="none">
-				<SearchIcon color="white" />
+				<SearchIcon />
 			</InputLeftElement>
 			<Input id={inputId} value={value} {...props} pl="40px" />
 		</InputGroup>

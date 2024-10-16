@@ -9,7 +9,7 @@ import { useUIContext } from 'contexts/ui';
 import { Article, OfflineArticle } from 'types/article';
 import { Anthology, OfflineAnthology } from 'types/anthology';
 import SearchInput from 'components/Inputs/SearchInput';
-import ArticleCard from 'components/Cards/ArticleCard';
+import ArticleCard from 'components/Cards/ReaderArticleCard';
 
 const Folder = (): JSX.Element => {
 	const user = useUserContext();
@@ -48,11 +48,9 @@ const Folder = (): JSX.Element => {
 
 	if (!user.data.isOffline ? !onlineAnthology : !offlineAnthology) {
 		return (
-			<>
-				<VStack w="100%" h="100vh" justify="center">
-					<CircularProgress size="120px" isIndeterminate color="black" />
-				</VStack>
-			</>
+			<VStack w="100%" h="100%" justify="center">
+				<CircularProgress size="120px" isIndeterminate color="black" />
+			</VStack>
 		);
 	}
 
@@ -92,22 +90,22 @@ const Folder = (): JSX.Element => {
 									// TODO: Topic name
 									topic={`Topic #${article.topicId}`}
 									content={article.content}
-									actions={[
-										// TODO: add article to other anthology
-										// TODO: add / remove article to favorites
-										<Tooltip label="Supprimer du dossier">
-											<span>
-												<FaFolderMinus
-													onClick={async () =>
-														await ui.online.anthologies.removeArticle(+anthologyId!, article.id, async () =>
-															setRefresh((r) => r + 1),
-														)
-													}
-													color="white"
-												/>
-											</span>
-										</Tooltip>,
-									]}
+									// actions={[
+									// 	// TODO: add article to other anthology
+									// 	// TODO: add / remove article to favorites
+									// 	<Tooltip label="Supprimer du dossier">
+									// 		<span>
+									// 			<FaFolderMinus
+									// 				onClick={async () =>
+									// 					await ui.online.anthologies.removeArticle(+anthologyId!, article.id, async () =>
+									// 						setRefresh((r) => r + 1),
+									// 					)
+									// 				}
+									// 				color="white"
+									// 			/>
+									// 		</span>
+									// 	</Tooltip>,
+									// ]}
 									likes={article.likeCounter}
 									views={article.viewCounter}
 								/>
@@ -124,22 +122,22 @@ const Folder = (): JSX.Element => {
 									// TODO: Topic name ? Or nothing
 									topic={`Topic #${article.topicId}`}
 									content={article.preview || ''}
-									actions={[
-										// TODO: add article to other anthology
-										// TODO: add / remove article to favorites
-										<Tooltip label="Supprimer du dossier">
-											<span>
-												<FaFolderMinus
-													onClick={() =>
-														ui.offline.anthologies.removeArticle(anthologyId!, article.cid, async () =>
-															setRefresh((r) => r + 1),
-														)
-													}
-													color="white"
-												/>
-											</span>
-										</Tooltip>,
-									]}
+									// actions={[
+									// 	// TODO: add article to other anthology
+									// 	// TODO: add / remove article to favorites
+									// 	<Tooltip label="Supprimer du dossier">
+									// 		<span>
+									// 			<FaFolderMinus
+									// 				onClick={() =>
+									// 					ui.offline.anthologies.removeArticle(anthologyId!, article.cid, async () =>
+									// 						setRefresh((r) => r + 1),
+									// 					)
+									// 				}
+									// 				color="white"
+									// 			/>
+									// 		</span>
+									// 	</Tooltip>,
+									// ]}
 								/>
 							</GridItem>
 					  ))}

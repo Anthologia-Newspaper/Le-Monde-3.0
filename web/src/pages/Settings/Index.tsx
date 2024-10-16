@@ -51,53 +51,51 @@ const Settings = (): JSX.Element => {
 	}, [activeStep]);
 
 	return (
-		<>
-			<Tabs isFitted variant="enclosed" h="100%">
-				<TabList>
-					<Tab>Mode hors-ligne</Tab>
-					<Tab isDisabled={user.data.isOffline}>Profil utilisateur</Tab>
-				</TabList>
+		<Tabs isFitted variant="enclosed" w="100%" h="100%">
+			<TabList>
+				<Tab>Mode hors-ligne</Tab>
+				<Tab isDisabled={user.data.isOffline}>Profil utilisateur</Tab>
+			</TabList>
 
-				<TabPanels h="100%">
-					<TabPanel>
-						<Stepper
-							mt="24px"
-							mb="56px"
-							index={activeStep}
-							orientation={horizontalStepper ? 'horizontal' : 'vertical'}
-							height={horizontalStepper ? '64px' : '240px'}
-							gap="0"
-						>
-							{steps.map((step, index) => (
-								<Step key={index}>
-									<StepIndicator>
-										<StepStatus complete={<StepIcon />} incomplete={<StepNumber />} active={<StepNumber />} />
-									</StepIndicator>
+			<TabPanels w="100%" h="100%">
+				<TabPanel>
+					<Stepper
+						mt="24px"
+						mb="56px"
+						index={activeStep}
+						orientation={horizontalStepper ? 'horizontal' : 'vertical'}
+						height={horizontalStepper ? '64px' : '240px'}
+						gap="0"
+					>
+						{steps.map((step, index) => (
+							<Step key={index}>
+								<StepIndicator>
+									<StepStatus complete={<StepIcon />} incomplete={<StepNumber />} active={<StepNumber />} />
+								</StepIndicator>
 
-									<Box flexShrink="0">
-										<StepTitle>{step.title}</StepTitle>
-										<StepDescription>{step.description}</StepDescription>
-									</Box>
+								<Box flexShrink="0">
+									<StepTitle>{step.title}</StepTitle>
+									<StepDescription>{step.description}</StepDescription>
+								</Box>
 
-									<StepSeparator />
-								</Step>
-							))}
-						</Stepper>
-						<VStack align="start" justify="center" mb="32px" w="100%" maxW="720px" spacing="48px">
-							{activeStep === 0 && <Step0 setActiveStep={setActiveStep} />}
-							{activeStep === 1 && <Step1 setActiveStep={setActiveStep} />}
-							{activeStep === 2 && <Step2 setActiveStep={setActiveStep} />}
-							{activeStep === 4 && <Step4 setActiveStep={setActiveStep} />}
-						</VStack>
-					</TabPanel>
-					<TabPanel h="100%">
-						<VStack w="100%" h="100%" maxW="720px" spacing={{ base: '8px', md: '12px', lg: '16px' }} align="start">
-							<Profil />
-						</VStack>
-					</TabPanel>
-				</TabPanels>
-			</Tabs>
-		</>
+								<StepSeparator />
+							</Step>
+						))}
+					</Stepper>
+					<VStack align="start" justify="center" mb="32px" w="100%" maxW="720px" spacing="48px">
+						{activeStep === 0 && <Step0 setActiveStep={setActiveStep} />}
+						{activeStep === 1 && <Step1 setActiveStep={setActiveStep} />}
+						{activeStep === 2 && <Step2 setActiveStep={setActiveStep} />}
+						{activeStep === 4 && <Step4 setActiveStep={setActiveStep} />}
+					</VStack>
+				</TabPanel>
+				<TabPanel w="100%" h="100%">
+					<VStack w="100%" h="100%" spacing={{ base: '8px', sm: '16px', md: '24px' }} align="start">
+						<Profil />
+					</VStack>
+				</TabPanel>
+			</TabPanels>
+		</Tabs>
 	);
 };
 

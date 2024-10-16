@@ -19,67 +19,74 @@ const Profil = (): JSX.Element => {
 
 	return (
 		<>
-			<Text variant="link">Nom d'utilisateur</Text>
-			<HStack w="100%">
-				<FormInput
-					value={username}
-					inputId="password-input-10"
+			<VStack w="100%" align="start" spacing={{ base: '8px', sm: '10px', md: '12px' }}>
+				<Text variant="link">Nom d'utilisateur</Text>
+				<HStack w="100%">
+					<FormInput
+						value={username}
+						inputId="password-input-10"
+						w="100%"
+						placeholder="Nouveau nom d'utilisateur"
+						onChange={(e) => setUsername(e.target.value)}
+						isError={false}
+						errorMessage=""
+					/>
+					<Button
+						// TODO: callback
+						onClick={async () => await ui.online.user.update.username(username)}
+					>
+						Modifier
+					</Button>
+				</HStack>
+			</VStack>
+			<VStack w="100%" align="start" spacing={{ base: '8px', sm: '10px', md: '12px' }}>
+				<Text variant="link">Email</Text>
+				<HStack w="100%">
+					<FormInput
+						value={email}
+						inputId="password-input-11"
+						w="100%"
+						placeholder="Nouveau nom d'utilisateur"
+						onChange={(e) => setEmail(e.target.value)}
+						isError={false}
+						errorMessage=""
+					/>
+					<Button
+						// TODO: callback
+						onClick={async () => await ui.online.user.update.email(email)}
+					>
+						Modifier
+					</Button>
+				</HStack>
+			</VStack>
+			<VStack w="100%" align="start" spacing={{ base: '8px', sm: '10px', md: '12px' }}>
+				<Text variant="link">Mot de passe</Text>
+				<PwdInput
+					value={password}
+					inputId="password-input-12"
 					w="100%"
-					placeholder="Nouveau nom d'utilisateur"
-					onChange={(e) => setUsername(e.target.value)}
+					placeholder="Mot de passe"
+					onChange={(e) => setPassword(e.target.value)}
+					isError={false}
+					errorMessage=""
+				/>
+				<PwdInput
+					value={newPassword}
+					inputId="new-password-input"
+					w="100%"
+					placeholder="Nouveau mot de passe"
+					onChange={(e) => setNewPassword(e.target.value)}
 					isError={false}
 					errorMessage=""
 				/>
 				<Button
 					// TODO: callback
-					onClick={async () => await ui.online.user.update.username(username)}
+					onClick={async () => await ui.online.user.update.password({ oldPassword: password, newPassword })}
 				>
 					Modifier
 				</Button>
-			</HStack>
-			<Text variant="link">Email</Text>
-			<HStack w="100%">
-				<FormInput
-					value={email}
-					inputId="password-input-11"
-					w="100%"
-					placeholder="Nouveau nom d'utilisateur"
-					onChange={(e) => setEmail(e.target.value)}
-					isError={false}
-					errorMessage=""
-				/>
-				<Button
-					// TODO: callback
-					onClick={async () => await ui.online.user.update.email(email)}
-				>
-					Modifier
-				</Button>
-			</HStack>
-			<Text variant="link">Mot de passe</Text>
-			<PwdInput
-				value={password}
-				inputId="password-input-12"
-				w="100%"
-				placeholder="Mot de passe"
-				onChange={(e) => setPassword(e.target.value)}
-				isError={false}
-				errorMessage=""
-			/>
-			<PwdInput
-				value={newPassword}
-				inputId="new-password-input"
-				w="100%"
-				placeholder="Nouveau mot de passe"
-				onChange={(e) => setNewPassword(e.target.value)}
-				isError={false}
-				errorMessage=""
-			/>
-			<Button
-				// TODO: callback
-				onClick={async () => await ui.online.user.update.password({ oldPassword: password, newPassword })}
-			>
-				Modifier
-			</Button>
+			</VStack>
+			<br />
 			<VStack w="100%" align="center" mt="auto">
 				<Divider />
 				<Text cursor="pointer" onClick={async () => await ui.online.auth.sign.out(() => navigate('/'))}>

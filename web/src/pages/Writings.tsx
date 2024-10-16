@@ -13,7 +13,7 @@ import { FaEye } from 'react-icons/fa';
 
 import { Topic } from 'types/topic';
 import { Article } from 'types/article';
-import ArticleCard from 'components/Cards/ArticleCard';
+import ArticleCard from 'components/Cards/ReaderArticleCard';
 import SearchInput from 'components/Inputs/SearchInput';
 import { useUIContext } from 'contexts/ui';
 
@@ -164,20 +164,20 @@ const Writings = (): JSX.Element => {
 						// TODO: topic name
 						topic={`Topic #${article.topicId}`}
 						content={article.content}
-						actions={[
-							// TODO: draft to publication
-							<Tooltip label="Supprimer définitivement">
-								<span>
-									<DeleteIcon
-										onClick={async () => await ui.online.articles.delete(article.id, () => setRefresh((r) => r + 1))}
-										color="black"
-									/>
-								</span>
-							</Tooltip>,
-						]}
+						// actions={[
+						// 	// TODO: draft to publication
+						// 	<Tooltip label="Supprimer définitivement">
+						// 		<span>
+						// 			<DeleteIcon
+						// 				onClick={async () => await ui.online.articles.delete(article.id, () => setRefresh((r) => r + 1))}
+						// 				color="black"
+						// 			/>
+						// 		</span>
+						// 	</Tooltip>,
+						// ]}
 						likes={article.likeCounter}
 						views={article.viewCounter}
-						view="publisher"
+						// view="writer"
 					/>
 				))}
 			</HStack>

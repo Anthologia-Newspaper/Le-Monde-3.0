@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { /* CircularProgress, */ Grid, GridItem, Stack, Tag, VStack, useDisclosure } from '@chakra-ui/react';
+import { CircularProgress, Grid, GridItem, HStack, Stack, Tag, Text, VStack, useDisclosure } from '@chakra-ui/react';
 import { PlusSquareIcon } from '@chakra-ui/icons';
 
 import { useUIContext } from 'contexts/ui';
@@ -59,15 +59,13 @@ const Library = (): JSX.Element => {
 		};
 	}, [search]);
 
-	// if (!user.data.isOffline ? !onlineAnthologies : !offlineAnthologies) {
-	// 	return (
-	// 		<>
-	// 			<VStack w="100%" h="100vh" justify="center">
-	// 				<CircularProgress size="120px" isIndeterminate color="black" />
-	// 			</VStack>
-	// 		</>
-	// 	);
-	// }
+	if (!user.data.isOffline ? !onlineAnthologies : !offlineAnthologies) {
+		return (
+			<VStack w="100%" h="100%" justify="center">
+				<CircularProgress size="120px" isIndeterminate />
+			</VStack>
+		);
+	}
 
 	return (
 		<>
@@ -76,27 +74,25 @@ const Library = (): JSX.Element => {
 					<SearchInput
 						value={search}
 						inputId="bookmarks-search-input"
-						w={{ base: '100%', xl: '640px' }}
+						w={{ base: '100%', md: '560px' }}
 						placeholder="Cherchez parmis vos dossiers"
 						onChange={(e) => setSearch(e.target.value)}
-						variant="primary-1"
 					/>
-					<PlusSquareIcon cursor="pointer" boxSize={8} color="primary.yellow" onClick={createModal.onOpen} />
 				</Stack>
-				<Tag bg="primary.yellow">
-					{!user.data.isOffline
-						? `${onlineAnthologies.length} dossier${onlineAnthologies.length === 1 ? '' : 's'}`
-						: `${offlineAnthologies.length} dossier${offlineAnthologies.length === 1 ? '' : 's'}`}
-				</Tag>
-				<Grid
-					templateColumns={{
-						base: 'repeat(1, 1fr)',
-						md: 'repeat(2, minmax(0, 1fr));',
-						lg: 'repeat(3, minmax(0, 1fr));',
-					}}
-					gap={{ base: 2, lg: 4 }}
-					w="100%"
-				>
+				<HStack>
+					<Tag>
+						{!user.data.isOffline
+							? `${onlineAnthologies.length} dossier${onlineAnthologies.length === 1 ? '' : 's'}`
+							: `${offlineAnthologies.length} dossier${offlineAnthologies.length === 1 ? '' : 's'}`}
+					</Tag>
+					<HStack cursor="pointer" onClick={createModal.onOpen}>
+						<Text variant="info">
+							<u>Ajouter</u>
+						</Text>
+						<PlusSquareIcon />
+					</HStack>
+				</HStack>
+				<Grid templateColumns="repeat(auto-fill, minmax(224px, 1fr))" gap={4} w="100%">
 					<GridItem>
 						<AnthologyCard
 							navigateUrl={'/bibliotheque/favoris'}
@@ -113,7 +109,7 @@ const Library = (): JSX.Element => {
 										name={anthology.name}
 										description={anthology.description}
 										// TODO: number of articles
-										nbArticles={0}
+										nbArticles={100}
 										deleteAnthology={async () =>
 											await ui.online.anthologies.delete(anthology.id, () => setRefresh((r) => r + 1))
 										}
