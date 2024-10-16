@@ -10,6 +10,7 @@ import {
 	HStack,
 	Text,
 	Tooltip,
+	useColorMode,
 	VStack,
 } from '@chakra-ui/react';
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
@@ -34,9 +35,19 @@ const AnthologyCard = ({
 	onOpen?: () => void;
 }): JSX.Element => {
 	const navigate = useNavigate();
+	const { colorMode } = useColorMode();
 
 	return (
-		<Card w="100%" h="100%">
+		<Card
+			w="100%"
+			h="100%"
+			_hover={{
+				background: colorMode === 'dark' ? 'gray.600' : 'gray.100',
+				'#anthology-card-actions-footer': {
+					visibility: 'visible',
+				},
+			}}
+		>
 			<CardHeader>
 				<VStack spacing="0px" align="start" w="100%">
 					<HStack justify="space-between" w="100%">
@@ -52,7 +63,7 @@ const AnthologyCard = ({
 				<Text>{description}</Text>
 			</CardBody>
 			<CardFooter>
-				<HStack spacing="8px">
+				<HStack id="anthology-card-actions-footer" visibility="hidden" spacing="8px">
 					<Tooltip label="Accèder au dossier">
 						<Button onClick={() => navigate(navigateUrl)}>
 							<FaArrowUpRightFromSquare />{' '}

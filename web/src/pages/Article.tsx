@@ -60,7 +60,7 @@ const ArticlePage = (): JSX.Element => {
 	if (!user.data.isOffline ? !onlineArticle : !offlineArticle) {
 		return (
 			<VStack w="100%" h="100%" justify="center">
-				<CircularProgress size="120px" isIndeterminate color="black" />
+				<CircularProgress size="120px" isIndeterminate />
 			</VStack>
 		);
 	}

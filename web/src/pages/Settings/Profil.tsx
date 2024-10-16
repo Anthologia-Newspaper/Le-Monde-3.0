@@ -87,6 +87,7 @@ const Profil = (): JSX.Element => {
 				</Button>
 			</VStack>
 			<br />
+			{/* TODO: find a way to put that at the end of the page */}
 			<VStack w="100%" align="center" mt="auto">
 				<Divider />
 				<Text cursor="pointer" onClick={async () => await ui.online.auth.sign.out(() => navigate('/'))}>

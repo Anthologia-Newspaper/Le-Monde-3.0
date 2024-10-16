@@ -59,6 +59,7 @@ const TOOLS = {
 
 const MARKS = [Bold, Italic, CodeMark, Underline, Strike, Highlight];
 
+// TODO: wrong toolbar colors in dark theme, cf https://github.com/Darginec05/Yoopta-Editor/issues/260
 const Editor = ({
 	setValue,
 	value,
@@ -86,7 +87,7 @@ const Editor = ({
 	}, [editor]);
 
 	return (
-		<VStack w="100%" maxW="720px" ref={selectionRef}>
+		<VStack id="main-editor" w="100%" maxW="720px" ref={selectionRef}>
 			<YooptaEditor
 				width="100%"
 				selectionBoxRoot={selectionRef}

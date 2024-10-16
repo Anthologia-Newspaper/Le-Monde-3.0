@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { Grid, GridItem, HStack, Text, Tooltip, VStack, useDisclosure } from '@chakra-ui/react';
-import { FaFolderPlus } from 'react-icons/fa';
-import { FcLike } from 'react-icons/fc';
+import { Grid, GridItem, HStack, Text, VStack, useDisclosure } from '@chakra-ui/react';
 
 import { useUIContext } from 'contexts/ui';
 import { useUserContext } from 'contexts/user';
@@ -108,32 +106,15 @@ const Favorites = (): JSX.Element => {
 										// TODO: topic name
 										topic={`Topic #${article.topicId}`}
 										content={article.content}
-										// actions={[
-										// 	<Tooltip label="Ajouter à un dossier">
-										// 		<span>
-										// 			<FaFolderPlus
-										// 				onClick={() => {
-										// 					setOnlineArticleToAdd(article.id);
-										// 					onOpen();
-										// 				}}
-										// 				color="white"
-										// 			/>
-										// 		</span>
-										// 	</Tooltip>,
-										// 	<Tooltip label="Supprimer des favoris">
-										// 		<span>
-										// 			<FcLike
-										// 				onClick={async () =>
-										// 					await ui.online.articles.like({ id: article.id, isLiked: true }, () =>
-										// 						setRefresh((r) => r + 1),
-										// 					)
-										// 				}
-										// 			/>
-										// 		</span>
-										// 	</Tooltip>,
-										// ]}
 										likes={article.likeCounter}
 										views={article.viewCounter}
+										addToFolderAction={async () => {
+											setOnlineArticleToAdd(article.id);
+											onOpen();
+										}}
+										removeFromFavoritesAction={async () =>
+											await ui.online.articles.like({ id: article.id, isLiked: true }, () => setRefresh((r) => r + 1))
+										}
 									/>
 								</GridItem>
 						  ))
@@ -148,26 +129,15 @@ const Favorites = (): JSX.Element => {
 										// TODO: topic name ? Or nothing
 										topic={`Topic #${article.topicId}`}
 										content={article.preview || ''}
-										// actions={[
-										// 	<Tooltip label="Ajouter à un dossier">
-										// 		<span>
-										// 			<FaFolderPlus
-										// 				onClick={() => {
-										// 					setOfflineArticleToAdd(article.cid);
-										// 					onOpen();
-										// 				}}
-										// 				color="white"
-										// 			/>
-										// 		</span>
-										// 	</Tooltip>,
-										// 	<Tooltip label="Supprimer des favoris">
-										// 		<span>
-										// 			<FcLike
-										// 				onClick={() => ui.offline.articles.like(article.cid, true, () => setRefresh((r) => r + 1))}
-										// 			/>
-										// 		</span>
-										// 	</Tooltip>,
-										// ]}
+										likes={-1}
+										views={-1}
+										addToFolderAction={async () => {
+											setOfflineArticleToAdd(article.cid);
+											onOpen();
+										}}
+										removeFromFavoritesAction={async () =>
+											ui.offline.articles.like(article.cid, true, () => setRefresh((r) => r + 1))
+										}
 									/>
 								</GridItem>
 						  ))}

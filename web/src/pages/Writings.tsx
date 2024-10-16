@@ -1,25 +1,38 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DeleteIcon } from '@chakra-ui/icons';
-import { Button, HStack, Icon, Select, Stack, Text, Tooltip, VStack } from '@chakra-ui/react';
-import { CiSquarePlus } from 'react-icons/ci';
+import { PlusSquareIcon } from '@chakra-ui/icons';
+import {
+	Button,
+	CircularProgress,
+	Grid,
+	GridItem,
+	HStack,
+	Icon,
+	Select,
+	Stack,
+	Tag,
+	Text,
+	Tooltip,
+	useColorMode,
+	VStack,
+} from '@chakra-ui/react';
 import { FaFilter, FaSort } from 'react-icons/fa';
 import { FaSortDown, FaSortUp } from 'react-icons/fa6';
-import { PiArticleNyTimesBold } from 'react-icons/pi';
-import { RiDraftFill, RiFilterOffLine } from 'react-icons/ri';
+import { RiArticleLine, RiDraftLine, RiFilterOffLine } from 'react-icons/ri';
 import { FcLike } from 'react-icons/fc';
 import { FaEye } from 'react-icons/fa';
 
 import { Topic } from 'types/topic';
 import { Article } from 'types/article';
-import ArticleCard from 'components/Cards/ReaderArticleCard';
-import SearchInput from 'components/Inputs/SearchInput';
 import { useUIContext } from 'contexts/ui';
+import WriterArticleCard from 'components/Cards/WriterArticleCard';
+import SearchInput from 'components/Inputs/SearchInput';
 
 const Writings = (): JSX.Element => {
 	const ui = useUIContext();
 	const navigate = useNavigate();
+	const { colorMode } = useColorMode();
 	const [refresh, setRefresh] = useState(1);
 	const [filter, setFilter] = useState(false);
 	const [search, setSearch] = useState('');
@@ -30,11 +43,28 @@ const Writings = (): JSX.Element => {
 	const [showPublications, setShowPublications] = useState(true);
 	const [topics, setTopics] = useState<Topic[]>([]);
 	const [articles, setArticles] = useState<Article[]>([]);
+	const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
+
+	const sortAndFilterArticles = (articlesToSort: Article[]) => {
+		return articlesToSort
+			.sort((a, b) => {
+				if (sortLikes === 'UP') return b.likeCounter - a.likeCounter;
+				if (sortLikes === 'DOWN') return a.likeCounter - b.likeCounter;
+				if (sortViews === 'UP') return b.viewCounter - a.viewCounter;
+				if (sortViews === 'DOWN') return a.viewCounter - b.viewCounter;
+				return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+			})
+			.filter((a) => {
+				if (showDrafts && showPublications) return true;
+				if (showDrafts && !showPublications) return a.draft;
+				if (!showDrafts && showPublications) return !a.draft;
+				if (!showDrafts && !showPublications) return a.draft;
+				return false;
+			});
+	};
 
 	useEffect(() => {
-		ui.online.articles.search.myArticles({ query: search, topic: topic?.id }, (returnedArticles: Article[]) =>
-			setArticles(returnedArticles.filter((a) => a.draft === showDrafts || !a.draft === showPublications)),
-		);
+		ui.online.articles.search.myArticles({}, (returnedArticles: Article[]) => setArticles(returnedArticles));
 	}, [refresh]);
 
 	useEffect(() => {
@@ -47,96 +77,107 @@ const Writings = (): JSX.Element => {
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			if (!filter) {
-				ui.online.articles.search.myArticles({}, setArticles);
+				setFilteredArticles(articles);
 			} else {
 				ui.online.articles.search.myArticles({ query: search, topic: topic?.id }, (returnedArticles: Article[]) =>
-					setArticles(returnedArticles.filter((a) => a.draft === showDrafts || !a.draft === showPublications)),
+					setFilteredArticles(returnedArticles),
 				);
 			}
-		}, 0.7 * 1000);
+		}, 0.5 * 1000);
 		return () => {
 			clearTimeout(timer);
 		};
-	}, [filter, search, topic, showDrafts, showPublications]);
+	}, [sortLikes, sortViews, filter, search, topic, showDrafts, showPublications, articles]);
 
-	useEffect(() => {
-		setArticles(
-			articles.sort((a, b) => {
-				if (sortLikes === 'UP') return b.likeCounter - a.likeCounter;
-				if (sortLikes === 'DOWN') return a.likeCounter - b.likeCounter;
-				if (sortViews === 'UP') return b.viewCounter - a.viewCounter;
-				if (sortViews === 'DOWN') return a.viewCounter - b.viewCounter;
-				return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-			}),
+	if (!articles || !filteredArticles) {
+		return (
+			<VStack w="100%" h="100%" justify="center">
+				<CircularProgress size="120px" isIndeterminate />
+			</VStack>
 		);
-	}, [sortLikes, sortViews, articles]);
+	}
 
 	return (
 		<VStack w="100%" spacing={{ base: '8px', md: '16px', lg: '24px', xl: '32px' }} align="start">
-			<HStack w="100%" align="center" spacing="24px">
-				<Text variant="h5">Rédactions</Text>
-				<Icon
-					as={CiSquarePlus}
-					boxSize={12}
-					color="primary.yellow"
-					cursor="pointer"
-					onClick={() => navigate('/ecrire')}
-				/>
+			<HStack>
+				<Tag>
+					{articles.length} article{articles.length === 1 ? '' : 's'}
+				</Tag>
+				<HStack cursor="pointer" onClick={() => navigate('/ecrire')}>
+					<Text variant="info">
+						<u>Ajouter</u>
+					</Text>
+					<PlusSquareIcon />
+				</HStack>
 			</HStack>
 			<VStack w="100%" align="start">
 				<HStack flexWrap="wrap">
-					<Button onClick={() => setFilter(!filter)}>
-						<Icon as={filter ? FaFilter : RiFilterOffLine} />
-					</Button>
-					<Button
-						onClick={() => {
-							setSortViews('NONE');
-							if (sortLikes === 'NONE') setSortLikes('UP');
-							else if (sortLikes === 'UP') setSortLikes('DOWN');
-							else setSortLikes('NONE');
-						}}
-					>
-						<Icon
-							as={sortLikes === 'NONE' ? FaSort : sortLikes === 'UP' ? FaSortUp : FaSortDown}
-							boxSize={4}
-							color="white"
-							mr="8px"
-						/>
-						<FcLike />
-					</Button>
-					<Button
-						onClick={() => {
-							setSortLikes('NONE');
-							if (sortViews === 'NONE') setSortViews('UP');
-							else if (sortViews === 'UP') setSortViews('DOWN');
-							else setSortViews('NONE');
-						}}
-					>
-						<Icon
-							as={sortViews === 'NONE' ? FaSort : sortViews === 'UP' ? FaSortUp : FaSortDown}
-							boxSize={4}
-							color="white"
-							mr="8px"
-						/>
-						<FaEye />
-					</Button>
-					<Button onClick={() => setShowPublications(!showPublications)}>
-						<Icon as={PiArticleNyTimesBold} boxSize={showPublications ? 6 : 5} color="white" mr="8px" />
-					</Button>
-					<Button onClick={() => setShowDrafts(!showDrafts)}>
-						<Icon as={RiDraftFill} boxSize={showDrafts ? 5 : 4} color="white" mr="8px" />
-					</Button>
+					<Tooltip label="Filtrer par mots-clés et/ou sujet">
+						<Button
+							onClick={() => setFilter(!filter)}
+							bg={!filter ? 'none' : colorMode === 'dark' ? 'whiteAlpha.200' : 'gray.100'}
+						>
+							<Icon as={filter ? FaFilter : RiFilterOffLine} />
+						</Button>
+					</Tooltip>
+					<Tooltip label="Trier en fonction du nombre de vues">
+						<Button
+							onClick={() => {
+								setSortViews('NONE');
+								if (sortLikes === 'NONE') setSortLikes('UP');
+								else if (sortLikes === 'UP') setSortLikes('DOWN');
+								else setSortLikes('NONE');
+							}}
+							bg={sortLikes === 'NONE' ? 'none' : colorMode === 'dark' ? 'whiteAlpha.200' : 'gray.100'}
+						>
+							<Icon
+								as={sortLikes === 'NONE' ? FaSort : sortLikes === 'UP' ? FaSortUp : FaSortDown}
+								boxSize={4}
+								mr="8px"
+							/>
+							<FcLike />
+						</Button>
+					</Tooltip>
+					<Tooltip label="Trier en fonction du nombre de likes">
+						<Button
+							onClick={() => {
+								setSortLikes('NONE');
+								if (sortViews === 'NONE') setSortViews('UP');
+								else if (sortViews === 'UP') setSortViews('DOWN');
+								else setSortViews('NONE');
+							}}
+							bg={sortViews === 'NONE' ? 'none' : colorMode === 'dark' ? 'whiteAlpha.200' : 'gray.100'}
+						>
+							<Icon
+								as={sortViews === 'NONE' ? FaSort : sortViews === 'UP' ? FaSortUp : FaSortDown}
+								boxSize={4}
+								mr="8px"
+							/>
+							<FaEye />
+						</Button>
+					</Tooltip>
+					<Tooltip label={`${showPublications ? 'Cacher' : 'Afficher'} les publications`}>
+						<Button
+							bg={!showPublications ? 'none' : colorMode === 'dark' ? 'whiteAlpha.200' : 'gray.100'}
+							onClick={() => setShowPublications(!showPublications)}
+						>
+							<Icon as={RiArticleLine} boxSize={showPublications ? 5 : 4} />
+						</Button>
+					</Tooltip>
+					<Tooltip label={`${showDrafts ? 'Cacher' : 'Afficher'} les brouillons`}>
+						<Button
+							bg={!showDrafts ? 'none' : colorMode === 'dark' ? 'whiteAlpha.200' : 'gray.100'}
+							onClick={() => setShowDrafts(!showDrafts)}
+						>
+							<Icon as={RiDraftLine} boxSize={showDrafts ? 5 : 4} />
+						</Button>
+					</Tooltip>
 				</HStack>
 				{filter && (
-					<Stack direction={{ xs: 'column', sm: 'row' }} w="100%" justify="flex-start">
-						<SearchInput
-							w={{ xs: '100%', sm: '320px' }}
-							placeholder="..."
-							value={search}
-							onChange={(e) => setSearch(e.target.value)}
-						/>
+					<Stack direction={{ base: 'column', sm: 'row' }} w="100%" justify="flex-start">
+						<SearchInput w="100%" placeholder="..." value={search} onChange={(e) => setSearch(e.target.value)} />
 						<Select
-							w={{ xs: '100%', sm: '222px' }}
+							w="auto"
 							minW={{ xs: 'auto', md: '200px' }}
 							sx={{
 								'> option': {
@@ -152,35 +193,24 @@ const Writings = (): JSX.Element => {
 					</Stack>
 				)}
 			</VStack>
-			<HStack w="100%" spacing="16px" flexWrap="wrap">
-				{articles.map((article, index) => (
-					<ArticleCard
-						navigateUrl={`/articles/${article.id}`}
-						key={index.toString()}
-						title={article.title}
-						// TODO: author name
-						author={`Author #${article.authorId}`}
-						date={new Date().toLocaleDateString('fr-FR')}
-						// TODO: topic name
-						topic={`Topic #${article.topicId}`}
-						content={article.content}
-						// actions={[
-						// 	// TODO: draft to publication
-						// 	<Tooltip label="Supprimer définitivement">
-						// 		<span>
-						// 			<DeleteIcon
-						// 				onClick={async () => await ui.online.articles.delete(article.id, () => setRefresh((r) => r + 1))}
-						// 				color="black"
-						// 			/>
-						// 		</span>
-						// 	</Tooltip>,
-						// ]}
-						likes={article.likeCounter}
-						views={article.viewCounter}
-						// view="writer"
-					/>
+			<Grid templateColumns="repeat(auto-fill, minmax(280px, 1fr))" gap={4} w="100%">
+				{sortAndFilterArticles(filteredArticles).map((article, index) => (
+					<GridItem key={index.toString()}>
+						<WriterArticleCard
+							// TODO: update article
+							navigateUrl={`/articles/${article.id}`}
+							title={article.title}
+							date={new Date().toLocaleDateString('fr-FR')}
+							topic={topics.find((t) => t.id === article.topicId)?.name || 'No topic matched'}
+							content={article.content}
+							isDraft={article.draft}
+							deleteAction={async () => await ui.online.articles.delete(article.id, () => setRefresh((r) => r + 1))}
+							likes={article.likeCounter}
+							views={article.viewCounter}
+						/>
+					</GridItem>
 				))}
-			</HStack>
+			</Grid>
 		</VStack>
 	);
 };

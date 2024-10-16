@@ -111,10 +111,10 @@ const Step1 = ({ setActiveStep }: { setActiveStep: (v: number) => void }): JSX.E
 				</VStack>
 			</VStack>
 			<HStack w="100%" justify="space-between">
-				<Button variant="primary-purple" maxW="240px" onClick={() => setActiveStep(0)}>
+				<Button maxW="240px" onClick={() => setActiveStep(0)}>
 					Précédent
 				</Button>
-				<Button variant="primary-purple" maxW="240px" onClick={() => setActiveStep(2)} isDisabled={!isGatewayWorking}>
+				<Button maxW="240px" onClick={() => setActiveStep(2)} isDisabled={!isGatewayWorking}>
 					Suivant
 				</Button>
 			</HStack>

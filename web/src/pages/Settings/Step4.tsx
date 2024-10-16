@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, HStack, Input, Text, VStack, useToast } from '@chakra-ui/react';
+import { Button, HStack, Input, Stack, Text, VStack, useToast } from '@chakra-ui/react';
 
 import { useUserContext } from 'contexts/user';
 import { useOfflineUserContext } from 'contexts/offlineUser';
@@ -82,7 +82,6 @@ const Step3 = ({ setActiveStep }: { setActiveStep: (v: number) => void }): JSX.E
 						suffit de re-cliquer dessus retourner au mode en-ligne.
 					</Text>
 					<Button
-						variant="primary-yellow"
 						onClick={async () => {
 							// TODO: verify with backend the user is redirected if not already login
 							if (user.data.isOffline) await ui.online.user.me();
@@ -98,18 +97,16 @@ const Step3 = ({ setActiveStep }: { setActiveStep: (v: number) => void }): JSX.E
 					Ainsi, vous pouvez téléverser sur n'importe appareil ce fichier pour retrouver votre profil, dans le cas où
 					vous utilisez le mode hors-ligne.
 				</Text>
-				<HStack>
-					<Button variant="primary-yellow" onClick={downloadProfil}>
-						Télécharger mon profil
-					</Button>
-					<VStack align="start" spacing="8px" w="100%">
-						<Text variant="link">Téléverser mon profil</Text>
-						<Input h="100%" type="file" variant="file-primary-orange" onChange={uploadProfil} />
+				<Stack direction={{ base: 'column', sm: 'row' }} w="100%" justify="space-between">
+					<Button onClick={downloadProfil}>Télécharger mon profil</Button>
+					<VStack align="start" spacing="8px">
+						{/* <Text variant="link">Téléverser mon profil</Text> */}
+						<Input type="file" onChange={uploadProfil} />
 					</VStack>
-				</HStack>
+				</Stack>
 			</VStack>
 			<HStack w="100%" align="start">
-				<Button variant="primary-purple" maxW="240px" onClick={() => setActiveStep(2)}>
+				<Button maxW="240px" onClick={() => setActiveStep(2)}>
 					Précédent
 				</Button>
 			</HStack>

@@ -25,15 +25,15 @@ const Connexion = (): JSX.Element => {
 		<VStack w="100%" align="center">
 			<Input
 				id="connexion-email-input"
-				variant="primary"
 				placeholder="e-mail ou nom d'utilisateur"
 				onChange={(e) => setLoginInput(e.target.value)}
+				color="white"
 			/>
 			<PwdInput
 				inputId="connexion-pwd-input"
-				variant="primary"
 				placeholder="mot de passe"
 				onChange={(e) => setPwdInut(e.target.value)}
+				color="white"
 			/>
 			<Button
 				id="connexion-connexion-btn"

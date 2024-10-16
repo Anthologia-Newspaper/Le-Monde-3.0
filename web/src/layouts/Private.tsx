@@ -56,12 +56,12 @@ const Option = ({
 		}}
 	>
 		<HStack position="relative" w="100%" opacity={isEnable ? '1' : '0.5'}>
-			<Icon as={icon} position="absolute" left="40px" boxSize={10} color={isSelected ? 'primary' : 'gray.400'} />
+			<Icon as={icon} position="absolute" left="40px" boxSize={10} color={isSelected ? 'primary' : 'text'} />
 			<Text
 				variant="link"
 				fontWeight={isSelected ? 'bold' : 'regular'}
 				pl="120px"
-				color={isSelected ? 'primary' : 'gray.400'}
+				color={isSelected ? 'primary' : 'text'}
 				opacity={isEnable ? '1' : '0.5'}
 			>
 				{name}

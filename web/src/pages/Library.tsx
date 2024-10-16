@@ -12,6 +12,7 @@ import SearchInput from 'components/Inputs/SearchInput';
 import AnthologyModal from 'components/modals/Anthology';
 import AnthologyCard from 'components/Cards/AnthologyCard';
 
+// TODO: add sorting
 const Library = (): JSX.Element => {
 	const ui = useUIContext();
 	const user = useUserContext();

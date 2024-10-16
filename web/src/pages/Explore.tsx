@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { Grid, GridItem, Select, Stack, Tooltip, VStack, useDisclosure } from '@chakra-ui/react';
-import { FaFolderPlus } from 'react-icons/fa';
+import { Grid, GridItem, Select, Stack, VStack, useDisclosure } from '@chakra-ui/react';
 
 import { useUIContext } from 'contexts/ui';
 import { useUserContext } from 'contexts/user';
@@ -10,7 +9,7 @@ import { Topic } from 'types/topic';
 import { Article, OfflineArticle } from 'types/article';
 import { Anthology, OfflineAnthology } from 'types/anthology';
 import SearchInput from 'components/Inputs/SearchInput';
-import ArticleCard from 'components/Cards/ReaderArticleCard';
+import ReaderArticleCard from 'components/Cards/ReaderArticleCard';
 import AnthologiesModal from 'components/modals/Anthologies';
 
 // TODO: improve online search
@@ -74,7 +73,7 @@ const Explore = (): JSX.Element => {
 					/>
 					{!user.data.isOffline && (
 						<Select
-							w="auto"
+							flexGrow={1}
 							onChange={(e) => setTopic(topics.find((t) => t.name === e.target.value))}
 							value={topic?.name}
 							sx={{
@@ -95,7 +94,7 @@ const Explore = (): JSX.Element => {
 								.filter((a) => (search !== '' ? a.title.includes(search) : true))
 								.map((article, index) => (
 									<GridItem key={index.toString()}>
-										<ArticleCard
+										<ReaderArticleCard
 											navigateUrl={`/articles/${article.id}`}
 											title={article.title}
 											// TODO: author name
@@ -104,26 +103,18 @@ const Explore = (): JSX.Element => {
 											// TODO: topic name
 											topic={`Topic #${article.topicId}`}
 											content={article.content}
-											// actions={[
-											// 	<Tooltip label="Ajouter à un dossier">
-											// 		<span>
-											// 			<FaFolderPlus
-											// 				onClick={() => {
-											// 					setOnlineArticleToAdd(article.id);
-											// 					onOpen();
-											// 				}}
-											// 			/>
-											// 		</span>
-											// 	</Tooltip>,
-											// ]}
 											likes={article.likeCounter}
 											views={article.viewCounter}
+											addToFolderAction={async () => {
+												setOnlineArticleToAdd(article.id);
+												onOpen();
+											}}
 										/>
 									</GridItem>
 								))
 						: offlineArticles.map((article, index) => (
 								<GridItem key={index.toString()}>
-									<ArticleCard
+									<ReaderArticleCard
 										navigateUrl={`/articles/${article.cid}`}
 										title={article.title}
 										// TODO: author name ? Or nothing
@@ -132,19 +123,13 @@ const Explore = (): JSX.Element => {
 										// TODO: topic name ? Or nothing
 										topic={`Topic #${article.topicId}`}
 										content={article.preview || ''}
-										// actions={[
-										// 	<Tooltip label="Ajouter à un dossier">
-										// 		<span>
-										// 			<FaFolderPlus
-										// 				onClick={() => {
-										// 					setOfflineArticleToAdd(article.cid);
-										// 					onOpen();
-										// 				}}
-										// 				size="20px"
-										// 			/>
-										// 		</span>
-										// 	</Tooltip>,
-										// ]}
+										likes={-1}
+										views={-1}
+										// TODO: add / remove favorites
+										addToFolderAction={async () => {
+											setOfflineArticleToAdd(article.cid);
+											onOpen();
+										}}
 									/>
 								</GridItem>
 						  ))}

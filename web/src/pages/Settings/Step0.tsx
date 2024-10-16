@@ -79,7 +79,7 @@ const Step0 = ({ setActiveStep }: { setActiveStep: (v: number) => void }): JSX.E
 				)}
 			</VStack>
 			<VStack w="100%" align="end">
-				<Button variant="primary-purple" maxW="240px" onClick={() => setActiveStep(1)}>
+				<Button maxW="240px" onClick={() => setActiveStep(1)}>
 					Suivant
 				</Button>
 			</VStack>

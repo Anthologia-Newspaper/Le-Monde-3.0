@@ -53,7 +53,6 @@ const Step2 = ({ setActiveStep }: { setActiveStep: (v: number) => void }): JSX.E
 				</VStack>
 				<VStack align="start" w="100%" spacing="8px">
 					<Button
-						variant="primary-purple"
 						onClick={refresh}
 						isDisabled={isRefreshWorking === 'loading'}
 						isLoading={isRefreshWorking === 'loading'}
@@ -85,10 +84,10 @@ const Step2 = ({ setActiveStep }: { setActiveStep: (v: number) => void }): JSX.E
 				</VStack>
 			</VStack>
 			<HStack w="100%" justify="space-between">
-				<Button variant="primary-purple" maxW="240px" onClick={() => setActiveStep(1)}>
+				<Button maxW="240px" onClick={() => setActiveStep(1)}>
 					Précédent
 				</Button>
-				<Button variant="primary-purple" maxW="240px" onClick={() => setActiveStep(4)} isDisabled={!isRefreshWorking}>
+				<Button maxW="240px" onClick={() => setActiveStep(4)} isDisabled={!isRefreshWorking}>
 					Suivant
 				</Button>
 			</HStack>
