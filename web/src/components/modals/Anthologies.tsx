@@ -12,10 +12,14 @@ import {
 	Text,
 	VStack,
 	useDisclosure,
+	Kbd,
+	Tag,
+	useColorMode,
 } from '@chakra-ui/react';
 
 import { Anthology, OfflineAnthology } from 'types/anthology';
 import AnthologyModal from './Anthology';
+import { PlusSquareIcon } from '@chakra-ui/icons';
 
 const AnthologiesModal = ({
 	isOpen,
@@ -36,6 +40,7 @@ const AnthologiesModal = ({
 	onlineAction: (id: number) => Promise<void>;
 	offlineAction: (id: string) => void;
 }) => {
+	const { colorMode } = useColorMode();
 	const createDiscolsure = useDisclosure();
 	const createIsOpen = createDiscolsure.isOpen;
 	const createOnOpen = createDiscolsure.onOpen;
@@ -45,45 +50,38 @@ const AnthologiesModal = ({
 		<>
 			<Modal isOpen={isOpen} onClose={onClose}>
 				<ModalOverlay />
-				<ModalContent bg="gray.900">
-					<ModalHeader color="white">Dossiers</ModalHeader>
-					<ModalCloseButton color="white" />
+				<ModalContent>
+					<ModalHeader>Dossiers</ModalHeader>
+					<ModalCloseButton />
 					<ModalBody>
-						<Text variant="p" mb="8px">
-							{isOffline ? offlineAnthologies!.length : onlineAnthologies!.length} dossier
-							{isOffline ? offlineAnthologies!.length !== 1 && 's' : onlineAnthologies!.length !== 1 && 's'}
-						</Text>
-						<VStack spacing="8px" mb="12px">
-							<HStack
-								w="100%"
-								align="baseline"
-								justify="space-between"
-								p={{ base: '8px', xl: '16px' }}
-								bg="gray.200"
-								borderRadius="sm"
-								cursor="pointer"
-								_hover={{ opacity: 0.9 }}
-								onClick={() => createOnOpen()}
-							>
-								<Text variant="link" color="black !important" cursor="pointer" _hover={{ opacity: '0.8' }}>
-									Nouveau dossier
-								</Text>
+						<VStack spacing="8px" mb="12px" align="start">
+							<HStack>
+								<Tag>
+									{isOffline ? offlineAnthologies!.length : onlineAnthologies!.length} dossier
+									{isOffline ? offlineAnthologies!.length !== 1 && 's' : onlineAnthologies!.length !== 1 && 's'}
+								</Tag>
+								<HStack cursor="pointer" onClick={() => createOnOpen()}>
+									<Text variant="info">
+										<u>Nouveau dossier</u>
+									</Text>
+									<PlusSquareIcon />
+								</HStack>
 							</HStack>
 							{isOffline
 								? offlineAnthologies!.map((anthology, index) => (
 										<HStack
 											key={index.toString()}
+											bg={colorMode === 'dark' ? 'whiteAlpha.200' : 'gray.100'}
 											w="100%"
 											align="baseline"
 											justify="space-between"
 											p={{ base: '8px', xl: '16px' }}
-											bg="gray.200"
 											borderRadius="sm"
 											cursor="pointer"
 											_hover={{ opacity: 0.9 }}
 											onClick={() => offlineAction(anthology.id)}
 										>
-											<Text variant="link" color="black !important" cursor="pointer" _hover={{ opacity: '0.8' }}>
+											<Text cursor="pointer" _hover={{ opacity: '0.8' }}>
 												{anthology.name}
 											</Text>
 											<Badge colorScheme="green" borderRadius="xsm">
@@ -94,23 +92,23 @@ const AnthologiesModal = ({
 								: onlineAnthologies!.map((anthology, index) => (
 										<HStack
 											key={index.toString()}
+											bg={colorMode === 'dark' ? 'whiteAlpha.200' : 'gray.100'}
 											w="100%"
 											align="baseline"
 											justify="space-between"
 											p={{ base: '8px', xl: '16px' }}
-											bg="gray.200"
 											borderRadius="sm"
 											cursor="pointer"
 											_hover={{ opacity: 0.9 }}
 											onClick={() => onlineAction(anthology.id)}
 										>
-											<Text variant="link" color="black !important" cursor="pointer" _hover={{ opacity: '0.8' }}>
+											<Text cursor="pointer" _hover={{ opacity: '0.8' }}>
 												{anthology.name}
 											</Text>
-											// TODO: nombre d'articles
-											<Badge colorScheme="green" borderRadius="xsm">
-												x articles
-											</Badge>
+											{/* // TODO: nombre d'articles */}
+											<span>
+												<Kbd>x articles</Kbd>
+											</span>
 										</HStack>
 								  ))}
 						</VStack>

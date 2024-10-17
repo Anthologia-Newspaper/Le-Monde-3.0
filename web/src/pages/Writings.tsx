@@ -198,6 +198,7 @@ const Writings = (): JSX.Element => {
 					<GridItem key={index.toString()}>
 						<WriterArticleCard
 							// TODO: update article
+							// TODO: draft to publication
 							navigateUrl={`/articles/${article.id}`}
 							title={article.title}
 							date={new Date().toLocaleDateString('fr-FR')}
