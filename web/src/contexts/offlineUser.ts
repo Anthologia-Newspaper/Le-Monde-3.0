@@ -4,7 +4,6 @@ import { OfflineUser } from 'types/user';
 import { OfflineArticle } from 'types/article';
 import { OfflineAnthologyArticle, OfflineCreateAnthology, OfflineUpdateAnthology } from 'types/offline';
 
-// TODO: remove useless types
 type OfflineUserContextType = {
 	data: OfflineUser;
 	articlesCatalog: OfflineArticle[];

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {
-	Badge,
 	HStack,
 	Modal,
 	ModalOverlay,
@@ -84,9 +83,11 @@ const AnthologiesModal = ({
 											<Text cursor="pointer" _hover={{ opacity: '0.8' }}>
 												{anthology.name}
 											</Text>
-											<Badge colorScheme="green" borderRadius="xsm">
-												{anthology.articles.length} article{anthology.articles.length !== 1 && 's'}
-											</Badge>
+											<span>
+												<Kbd>
+													{anthology.articles.length} article{anthology.articles.length !== 1 && 's'}
+												</Kbd>
+											</span>
 										</HStack>
 								  ))
 								: onlineAnthologies!.map((anthology, index) => (
@@ -105,9 +106,10 @@ const AnthologiesModal = ({
 											<Text cursor="pointer" _hover={{ opacity: '0.8' }}>
 												{anthology.name}
 											</Text>
-											{/* // TODO: nombre d'articles */}
 											<span>
-												<Kbd>x articles</Kbd>
+												<Kbd>
+													{anthology.articleCount} article{anthology.articleCount !== 1 && 's'}
+												</Kbd>
 											</span>
 										</HStack>
 								  ))}
@@ -122,6 +124,7 @@ const AnthologiesModal = ({
 				onClose={createOnClose}
 				type="CREATE"
 				action={async (name, description) => {
+					// TODO: verify name is not empty
 					await createAnthology(name, description);
 					// TODO: create modal closes even if action failed
 					createOnClose();

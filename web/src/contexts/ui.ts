@@ -42,7 +42,11 @@ type UIContextType = {
 				myArticles: (params: ParamsArticlesSearch, callback: (articles: Article[]) => void) => Promise<void>;
 				likedPublications: (params: ParamsArticlesSearch, callback: (articles: Article[]) => void) => Promise<void>;
 				oneDraft: (id: number, callback: (article: Article) => void) => Promise<void>;
-				onePublication: (id: number, callback: (article: Article) => void) => Promise<void>;
+				onePublication: (
+					id: number,
+					successCallback: (article: Article) => void,
+					errorCallback: () => void,
+				) => Promise<void>;
 			};
 			like: (params: ParamsArticlesLike, callback: (isLiked: boolean) => void) => Promise<void>;
 			delete: (id: number, callback: () => void) => Promise<void>;

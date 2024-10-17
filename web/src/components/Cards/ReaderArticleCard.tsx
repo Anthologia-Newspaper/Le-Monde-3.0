@@ -20,12 +20,10 @@ import {
 import { FaEye, FaFolderMinus, FaFolderPlus } from 'react-icons/fa';
 import { FcLike } from 'react-icons/fc';
 
-import Editor from 'components/Editor/Editor';
-
 const ReaderArticleCard = ({
 	navigateUrl,
 	author,
-	content,
+	rawContent,
 	date,
 	title,
 	likes,
@@ -37,7 +35,7 @@ const ReaderArticleCard = ({
 }: {
 	navigateUrl: string;
 	author: string;
-	content: string;
+	rawContent: string;
 	date: string;
 	likes: number;
 	views: number;
@@ -119,14 +117,14 @@ const ReaderArticleCard = ({
 				</VStack>
 			</CardHeader>
 			<CardBody>
-				{/* <VStack w="100%" align="left" spacing="8px" inlineSize="100%" maxInlineSize="calc(100vw - 32px);">
+				<VStack w="100%" align="left" spacing="8px" inlineSize="100%" maxInlineSize="calc(100vw - 32px);">
 					<Text noOfLines={3} maxW="100% !important">
-						{content}
+						{rawContent}
 					</Text>
-				</VStack> */}
-				<VStack maxH="80px" overflow="hidden">
-					<Editor value={JSON.parse(content)} readOnly={true} />
 				</VStack>
+				{/* <VStack maxH="80px" overflow="hidden">
+					<Editor value={JSON.parse(content)} readOnly={true} />
+				</VStack> */}
 			</CardBody>
 			<CardFooter>
 				<Flex direction="row" justify="space-between" w="100%">

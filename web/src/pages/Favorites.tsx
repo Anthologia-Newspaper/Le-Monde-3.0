@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { Grid, GridItem, HStack, Text, VStack, useDisclosure } from '@chakra-ui/react';
+import { Grid, GridItem, HStack, Tag, VStack, useDisclosure } from '@chakra-ui/react';
 
 import { useUIContext } from 'contexts/ui';
 import { useUserContext } from 'contexts/user';
@@ -11,6 +11,7 @@ import ArticleCard from 'components/Cards/ReaderArticleCard';
 import AnthologiesModal from 'components/modals/Anthologies';
 import { Anthology, OfflineAnthology } from 'types/anthology';
 
+// TODO: add filters and sortings (using backend)
 const Favorites = (): JSX.Element => {
 	const ui = useUIContext();
 	const user = useUserContext();
@@ -66,46 +67,31 @@ const Favorites = (): JSX.Element => {
 					w={{ base: '100%', xl: '640px' }}
 					placeholder="Cherchez parmis vos articles favoris"
 					onChange={(e) => setSearch(e.target.value)}
-					variant="primary-1"
 				/>
 				<HStack>
-					<Text variant="h5">
-						{!user.data.isOffline
-							? `Favori${onlineLikedArticles.length === 1 ? '' : 's'}`
-							: `Favori${offlineLikedArticles.length === 1 ? '' : 's'}`}
-					</Text>
-					<Text
-						variant="h5"
-						bg="primary.yellow"
-						color="gray.900 !important"
-						fontWeight="black"
-						p="0px 8px"
-						borderRadius="md"
-					>
-						{!user.data.isOffline ? onlineLikedArticles.length : offlineLikedArticles.length}
-					</Text>
+					<Tag>
+						{`${!user.data.isOffline ? onlineLikedArticles.length : offlineLikedArticles.length} favori${
+							!user.data.isOffline
+								? onlineLikedArticles.length === 1
+									? ''
+									: 's'
+								: offlineLikedArticles.length === 1
+								? ''
+								: 's'
+						}`}
+					</Tag>
 				</HStack>
-				<Grid
-					templateColumns={{
-						base: 'repeat(1, 1fr)',
-						md: 'repeat(2, minmax(0, 1fr));',
-						'2xl': 'repeat(3, minmax(0, 1fr));',
-					}}
-					gap={{ base: 2, lg: 4 }}
-					w="100%"
-				>
+				<Grid templateColumns="repeat(auto-fill, minmax(280px, 1fr))" gap={4} w="100%">
 					{!user.data.isOffline
 						? onlineLikedArticles.map((article, index) => (
 								<GridItem key={index.toString()}>
 									<ArticleCard
 										navigateUrl={`/articles/${article.id}`}
 										title={article.title}
-										// TODO: author name
-										author={`Author #${article.authorId}`}
+										author={article.author.username}
 										date={new Date(article.createdAt).toLocaleDateString('fr-FR')}
-										// TODO: topic name
-										topic={`Topic #${article.topicId}`}
-										content={article.content}
+										topic={article.topic.name}
+										rawContent={article.rawContent}
 										likes={article.likeCounter}
 										views={article.viewCounter}
 										addToFolderAction={async () => {
@@ -118,17 +104,15 @@ const Favorites = (): JSX.Element => {
 									/>
 								</GridItem>
 						  ))
-						: offlineUser.data.articles.liked.map((article, index) => (
+						: offlineLikedArticles.map((article, index) => (
 								<GridItem key={index.toString()}>
 									<ArticleCard
 										navigateUrl={`/articles/${article.cid}`}
 										title={article.title}
-										// TODO: author name ? Or nothing
-										author={`Author #${article.authorId}`}
+										author={article.author}
 										date={new Date(article.createdAt).toLocaleDateString('fr-FR')}
-										// TODO: topic name ? Or nothing
-										topic={`Topic #${article.topicId}`}
-										content={article.preview || ''}
+										topic={article.topic}
+										rawContent={article.preview}
 										likes={-1}
 										views={-1}
 										addToFolderAction={async () => {
@@ -152,16 +136,12 @@ const Favorites = (): JSX.Element => {
 				offlineAnthologies={!user.data.isOffline ? undefined : offlineAnthologies}
 				createAnthology={async (name: string, description: string) =>
 					!user.data.isOffline
-						? await ui.online.anthologies.create({ name, description, isPublic: false }, async () => {
-								onClose();
-								setRefresh((r) => r + 1);
-						  })
+						? await ui.online.anthologies.create({ name, description, isPublic: false }, async () =>
+								setRefresh((r) => r + 1),
+						  )
 						: ui.offline.anthologies.create({
 								params: { name, description },
-								callback: () => {
-									onClose();
-									setRefresh((r) => r + 1);
-								},
+								callback: () => setRefresh((r) => r + 1),
 						  })
 				}
 				onlineAction={async (id: number) =>

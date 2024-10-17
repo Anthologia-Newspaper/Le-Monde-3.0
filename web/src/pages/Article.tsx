@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Badge, CircularProgress, HStack, Text, Tooltip, useDisclosure, VStack } from '@chakra-ui/react';
 import { FcLikePlaceholder } from 'react-icons/fc';
 import { FaFolderPlus } from 'react-icons/fa';
@@ -15,11 +15,11 @@ import frenchDate from 'utils/frenchDate';
 import AnthologiesModal from 'components/modals/Anthologies';
 import Editor from 'components/Editor/Editor';
 
-// TODO: redirect if wrong ID
 const ArticlePage = (): JSX.Element => {
 	const ui = useUIContext();
 	const user = useUserContext();
 	const offlineUser = useOfflineUserContext();
+	const navigate = useNavigate();
 	const { articleId } = useParams();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [isLiked, setIsLiked] = useState(false);
@@ -40,7 +40,7 @@ const ArticlePage = (): JSX.Element => {
 		if (!user.data.isOffline) {
 			ui.online.articles.search.likedPublications({}, setOnlineLikedArticles);
 			ui.online.anthologies.search.many({ author: 'me' }, setOnlineAnthologies);
-			ui.online.articles.search.onePublication(+articleId!, setOnlineArticle);
+			ui.online.articles.search.onePublication(+articleId!, setOnlineArticle, () => navigate('/bibliotheque'));
 		} else {
 			ui.offline.articles.search.one(articleId!, setOfflineArticle);
 			ui.offline.articles.getContent(articleId!, setOfflineContent);
@@ -57,7 +57,7 @@ const ArticlePage = (): JSX.Element => {
 		}
 	}, [onlineArticle, offlineArticle]);
 
-	if (!user.data.isOffline ? !onlineArticle : !offlineArticle) {
+	if (!user.data.isOffline ? !onlineArticle : !offlineArticle || !offlineContent) {
 		return (
 			<VStack w="100%" h="100%" justify="center">
 				<CircularProgress size="120px" isIndeterminate />
@@ -101,16 +101,15 @@ const ArticlePage = (): JSX.Element => {
 							)}
 							<Tooltip label="Ajouter à un dossier">
 								<span>
-									<FaFolderPlus onClick={onOpen} color="white" size="24px" />
+									<FaFolderPlus onClick={onOpen} size="24px" />
 								</span>
 							</Tooltip>
 						</HStack>
 						<VStack align="left" spacing="0px" w="100%">
 							<Text variant="h3">{user.data.isOffline ? offlineArticle!.title : onlineArticle!.title}</Text>
 							<HStack>
-								// TODO: topic ? Or nothing
 								<Badge colorScheme="red" fontSize={{ base: 'small', lg: 'md' }} borderRadius="xsm">
-									{user.data.isOffline ? `Topic #${offlineArticle!.topicId}` : `Topic #${onlineArticle!.topicId}`}
+									{user.data.isOffline ? offlineArticle!.topic : onlineArticle!.topic.name}
 								</Badge>
 								{!user.data.isOffline && (
 									<>
@@ -141,9 +140,8 @@ const ArticlePage = (): JSX.Element => {
 						<Text variant="p" whiteSpace="pre-line" textAlign="justify"></Text>
 					</VStack>
 					<VStack align="left" spacing="0px" w="100%">
-						{/* // TODO: name author */}
 						<Text variant="h6">
-							Écrit par {user.data.isOffline ? offlineArticle!.authorId : onlineArticle!.authorId}
+							Écrit par {user.data.isOffline ? offlineArticle!.author : onlineArticle!.author.username}
 						</Text>
 						<Text variant="p">
 							{frenchDate(new Date(user.data.isOffline ? offlineArticle!.createdAt : onlineArticle!.createdAt))}
@@ -160,16 +158,12 @@ const ArticlePage = (): JSX.Element => {
 				offlineAnthologies={!user.data.isOffline ? undefined : offlineAnthologies}
 				createAnthology={async (name: string, description: string) =>
 					!user.data.isOffline
-						? await ui.online.anthologies.create({ name, description, isPublic: false }, async () => {
-								onClose();
-								setRefresh((r) => r + 1);
-						  })
+						? await ui.online.anthologies.create({ name, description, isPublic: false }, async () =>
+								setRefresh((r) => r + 1),
+						  )
 						: ui.offline.anthologies.create({
 								params: { name, description },
-								callback: () => {
-									onClose();
-									setRefresh((r) => r + 1);
-								},
+								callback: () => setRefresh((r) => r + 1),
 						  })
 				}
 				onlineAction={async (id: number) =>

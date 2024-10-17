@@ -68,7 +68,7 @@ const Writings = (): JSX.Element => {
 	}, [refresh]);
 
 	useEffect(() => {
-		const topicsIds = articles.map((a) => a.topicId).filter((value, index, array) => array.indexOf(value) === index);
+		const topicsIds = articles.map((a) => a.topic.id).filter((value, index, array) => array.indexOf(value) === index);
 		ui.online.topics.search.all((allTopics: Topic[]) =>
 			setTopics(topicsIds.map((id) => allTopics.find((t) => t.id === id)!)),
 		);
@@ -197,13 +197,11 @@ const Writings = (): JSX.Element => {
 				{sortAndFilterArticles(filteredArticles).map((article, index) => (
 					<GridItem key={index.toString()}>
 						<WriterArticleCard
-							// TODO: update article
-							// TODO: draft to publication
 							navigateUrl={`/articles/${article.id}`}
 							title={article.title}
 							date={new Date().toLocaleDateString('fr-FR')}
-							topic={topics.find((t) => t.id === article.topicId)?.name || 'No topic matched'}
-							content={article.content}
+							topic={article.topic.name}
+							rawContent={article.rawContent}
 							isDraft={article.draft}
 							deleteAction={async () => await ui.online.articles.delete(article.id, () => setRefresh((r) => r + 1))}
 							likes={article.likeCounter}

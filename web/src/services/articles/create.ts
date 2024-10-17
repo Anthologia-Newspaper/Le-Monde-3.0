@@ -7,6 +7,7 @@ const create = async (params: ParamsArticlesCreate) =>
 		title: params.title,
 		subtitle: params.subtitle || 'subtitle',
 		content: params.content,
+		rawContent: params.rawContent,
 		topic: params.topic,
 		draft: params.draft,
 	});

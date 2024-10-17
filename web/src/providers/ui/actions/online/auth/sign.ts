@@ -18,7 +18,7 @@ export const up = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				201: { message: 'Bienvenue ! Création de votre compte réussie.', subMessage: res.message },
+				201: { message: 'Bienvenue ! Création de votre compte réussie.' },
 			},
 		});
 		if (res.status === 'success') {
@@ -45,8 +45,8 @@ export const signIn = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				200: { message: 'Bonjour ! Connexion à votre compte réussie.', subMessage: res.message },
-				400: { message: 'Paramètres invalides.', subMessage: res.message },
+				200: { message: 'Bonjour ! Connexion à votre compte réussie.' },
+				400: { message: 'Paramètres invalides.' },
 			},
 		});
 		if (res.status === 'success') {
@@ -72,7 +72,7 @@ export const out = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				200: { message: 'Au révoir ! Déconnexion réussie.', subMessage: res.message },
+				200: { message: 'Au révoir ! Déconnexion réussie.' },
 			},
 		});
 		if (res.status === 'success') {
@@ -98,7 +98,7 @@ export const again = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				200: { message: 'Connexion rafraîchie.', subMessage: res.message },
+				200: { message: 'Connexion rafraîchie.' },
 			},
 		});
 		if (res.status === 'success') {

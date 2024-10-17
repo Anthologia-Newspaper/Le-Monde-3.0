@@ -87,7 +87,6 @@ const Step1 = ({ setActiveStep }: { setActiveStep: (v: number) => void }): JSX.E
 						Si vous utilisez une <i>gateway</i> publique, renseignez son url. Si vous utilisez une <i>gateway</i>{' '}
 						privée, renseigner le point d'accès de votre noeud IPFS (trouvable dans les réglages).
 					</Text>
-					{/* TODO: redirect here if there is an IPFS problem somewhere else */}
 					<InputGroup>
 						<Input
 							variant="primary-1"

@@ -5,7 +5,6 @@ import loadFromLocalStorage from 'utils/loadFromLocalStorage';
 import { User } from 'types/user';
 
 const UserProvider = ({ children }: { children: JSX.Element }) => {
-	// TODO: verify it's working with onligne mode
 	const defaultUser: User = {
 		isOffline: false,
 	};

@@ -31,12 +31,7 @@ const Profil = (): JSX.Element => {
 						isError={false}
 						errorMessage=""
 					/>
-					<Button
-						// TODO: callback
-						onClick={async () => await ui.online.user.update.username(username)}
-					>
-						Modifier
-					</Button>
+					<Button onClick={async () => await ui.online.user.update.username(username)}>Modifier</Button>
 				</HStack>
 			</VStack>
 			<VStack w="100%" align="start" spacing={{ base: '8px', sm: '10px', md: '12px' }}>
@@ -51,12 +46,7 @@ const Profil = (): JSX.Element => {
 						isError={false}
 						errorMessage=""
 					/>
-					<Button
-						// TODO: callback
-						onClick={async () => await ui.online.user.update.email(email)}
-					>
-						Modifier
-					</Button>
+					<Button onClick={async () => await ui.online.user.update.email(email)}>Modifier</Button>
 				</HStack>
 			</VStack>
 			<VStack w="100%" align="start" spacing={{ base: '8px', sm: '10px', md: '12px' }}>
@@ -79,10 +69,7 @@ const Profil = (): JSX.Element => {
 					isError={false}
 					errorMessage=""
 				/>
-				<Button
-					// TODO: callback
-					onClick={async () => await ui.online.user.update.password({ oldPassword: password, newPassword })}
-				>
+				<Button onClick={async () => await ui.online.user.update.password({ oldPassword: password, newPassword })}>
 					Modifier
 				</Button>
 			</VStack>

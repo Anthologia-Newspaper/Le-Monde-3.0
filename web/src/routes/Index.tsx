@@ -33,7 +33,7 @@ const Routes = (): JSX.Element => (
 								<Route path="/connexion" element={<Connexion />} />
 							</Route>
 							{/* TODO: add OnLigne route to verify that the user is not using offline mode for some specific pages */}
-							{/* TODO: if offline mode: verify that it is working */}
+							{/* TODO: and if offline mode, verify that it is working ? It's already done but maybe put logic somewhere else ? */}
 							<Route path="/" element={<PrivateRoute />}>
 								<Route path="/bibliotheque" element={<Library />} />
 								<Route path="/bibliotheque/favoris" element={<Favorites />} />

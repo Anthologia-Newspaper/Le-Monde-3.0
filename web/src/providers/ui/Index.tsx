@@ -75,7 +75,8 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 						break;
 					case 409:
 						title = messages[409]?.message || 'Conflit.';
-						description = messages[409]?.subMessage || res.message;
+						// description = messages[409]?.subMessage || res.message;
+						description = '';
 						break;
 					case 500:
 						title = 'Erreur du serveur.';
@@ -131,8 +132,14 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 						actions.online.articles.search.likedPublications(params, callback, onlineUser, uiContextValue.handleToast),
 					oneDraft: (id: number, callback: (article: Article) => void) =>
 						actions.online.articles.search.oneDraft(id, callback, onlineUser, uiContextValue.handleToast),
-					onePublication: (id: number, callback: (article: Article) => void) =>
-						actions.online.articles.search.onePublication(id, callback, onlineUser, uiContextValue.handleToast),
+					onePublication: (id: number, successCallback: (article: Article) => void, errorCallback: () => void) =>
+						actions.online.articles.search.onePublication(
+							id,
+							successCallback,
+							errorCallback,
+							onlineUser,
+							uiContextValue.handleToast,
+						),
 				},
 				like: (params: ParamsArticlesLike, callback: (isLiked: boolean) => void) =>
 					actions.online.articles.like(params, callback, onlineUser, uiContextValue.handleToast),

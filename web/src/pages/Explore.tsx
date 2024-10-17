@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { Grid, GridItem, Select, Stack, VStack, useDisclosure } from '@chakra-ui/react';
+import { CircularProgress, Grid, GridItem, Select, Stack, Tag, VStack, useDisclosure } from '@chakra-ui/react';
 
 import { useUIContext } from 'contexts/ui';
 import { useUserContext } from 'contexts/user';
@@ -12,8 +12,7 @@ import SearchInput from 'components/Inputs/SearchInput';
 import ReaderArticleCard from 'components/Cards/ReaderArticleCard';
 import AnthologiesModal from 'components/modals/Anthologies';
 
-// TODO: improve online search
-// TODO: articles should be likable / unlikable here
+// TODO: improve online / offline search
 const Explore = (): JSX.Element => {
 	const ui = useUIContext();
 	const user = useUserContext();
@@ -40,6 +39,7 @@ const Explore = (): JSX.Element => {
 			ui.online.anthologies.search.many({ author: 'me' }, setOnlineAnthologies);
 			ui.online.topics.search.all(setTopics);
 		} else {
+			console.log(offlineUser.articlesCatalog);
 			setOfflineArticles(offlineUser.articlesCatalog.filter((a) => (search !== '' ? a.title.includes(search) : true)));
 			setOfflineAnthologies(offlineUser.data.anthologies);
 		}
@@ -60,6 +60,14 @@ const Explore = (): JSX.Element => {
 			clearTimeout(timer);
 		};
 	}, [search, topic]);
+
+	if (!user.data.isOffline ? !onlineArticles : !offlineArticles) {
+		return (
+			<VStack w="100%" h="100%" justify="center">
+				<CircularProgress size="120px" isIndeterminate />
+			</VStack>
+		);
+	}
 
 	return (
 		<>
@@ -88,6 +96,11 @@ const Explore = (): JSX.Element => {
 						</Select>
 					)}
 				</Stack>
+				<Tag>
+					{!user.data.isOffline
+						? `${onlineArticles.length} article${onlineArticles.length === 1 ? '' : 's'}`
+						: `${offlineArticles.length} article${offlineArticles.length === 1 ? '' : 's'}`}
+				</Tag>
 				<Grid templateColumns="repeat(auto-fill, minmax(280px, 1fr))" gap={4} w="100%">
 					{!user.data.isOffline
 						? onlineArticles
@@ -97,12 +110,10 @@ const Explore = (): JSX.Element => {
 										<ReaderArticleCard
 											navigateUrl={`/articles/${article.id}`}
 											title={article.title}
-											// TODO: author name
-											author={`Author #${article.authorId}`}
+											author={article.author.username}
 											date={new Date(article.createdAt).toLocaleDateString('fr-FR')}
-											// TODO: topic name
-											topic={`Topic #${article.topicId}`}
-											content={article.content}
+											topic={article.topic.name}
+											rawContent={article.rawContent}
 											likes={article.likeCounter}
 											views={article.viewCounter}
 											addToFolderAction={async () => {
@@ -117,12 +128,10 @@ const Explore = (): JSX.Element => {
 									<ReaderArticleCard
 										navigateUrl={`/articles/${article.cid}`}
 										title={article.title}
-										// TODO: author name ? Or nothing
-										author={`Author #${article.authorId}`}
+										author={article.author}
 										date={new Date(article.createdAt).toLocaleDateString('fr-FR')}
-										// TODO: topic name ? Or nothing
-										topic={`Topic #${article.topicId}`}
-										content={article.preview || ''}
+										topic={article.topic}
+										rawContent={article.preview}
 										likes={-1}
 										views={-1}
 										// TODO: add / remove favorites
@@ -144,16 +153,12 @@ const Explore = (): JSX.Element => {
 				offlineAnthologies={!user.data.isOffline ? undefined : offlineAnthologies}
 				createAnthology={async (name: string, description: string) =>
 					!user.data.isOffline
-						? await ui.online.anthologies.create({ name, description, isPublic: false }, async () => {
-								onClose();
-								setRefresh((r) => r + 1);
-						  })
+						? await ui.online.anthologies.create({ name, description, isPublic: false }, async () =>
+								setRefresh((r) => r + 1),
+						  )
 						: ui.offline.anthologies.create({
 								params: { name, description },
-								callback: () => {
-									onClose();
-									setRefresh((r) => r + 1);
-								},
+								callback: () => setRefresh((r) => r + 1),
 						  })
 				}
 				onlineAction={async (id: number) =>

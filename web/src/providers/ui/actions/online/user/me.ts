@@ -15,7 +15,7 @@ const me = async (
 				showIfAuthError: true,
 			},
 			messages: {
-				200: { message: 'Profil récupéré.', subMessage: res.message },
+				200: { message: 'Profil récupéré.' },
 			},
 		});
 	} catch (error) {

@@ -19,7 +19,7 @@ export const allPublications = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				200: { message: 'Publications filtrées.', subMessage: res.message },
+				200: { message: 'Publications filtrées.' },
 			},
 		});
 		if (res.status === 'success') {
@@ -46,7 +46,7 @@ export const myArticles = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				200: { message: 'Articles filtrés.', subMessage: res.message },
+				200: { message: 'Articles filtrés.' },
 			},
 		});
 		if (res.status === 'success') {
@@ -73,7 +73,7 @@ export const likedPublications = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				200: { message: 'Publications filtrées.', subMessage: res.message },
+				200: { message: 'Publications filtrées.' },
 			},
 		});
 		if (res.status === 'success') {
@@ -100,7 +100,7 @@ export const oneDraft = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				200: { message: 'Brouillon trouvé.', subMessage: res.message },
+				200: { message: 'Brouillon trouvé.' },
 			},
 		});
 		if (res.status === 'success') {
@@ -113,7 +113,8 @@ export const oneDraft = async (
 
 export const onePublication = async (
 	id: number,
-	callback: (article: Article) => void,
+	successCallback: (article: Article) => void,
+	errorCallback: () => void,
 	onlineUser: OnlineUserContextType,
 	handleToast: ({ res, settings, messages }: UIHandling) => void,
 ) => {
@@ -122,16 +123,19 @@ export const onePublication = async (
 		handleToast({
 			res,
 			settings: {
-				showIfSuccess: true,
+				showIfSuccess: false,
 				showIfNotSuccess: true,
 				showIfAuthError: false,
 			},
 			messages: {
-				200: { message: 'Article trouvé.', subMessage: res.message },
+				200: { message: 'Article trouvé.', subMessage: '' },
+				404: { message: 'Article introuvable.', subMessage: 'Veuillez en renseigner un autre.' },
 			},
 		});
 		if (res.status === 'success') {
-			callback(res.data!);
+			successCallback(res.data!);
+		} else if (res.status === 'error') {
+			errorCallback();
 		}
 	} catch (error) {
 		console.error(error);

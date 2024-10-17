@@ -10,7 +10,7 @@ const Author = (): JSX.Element => {
 	return (
 		<VStack align="start" w="100%" spacing={{ base: '24px', md: '32px', lg: '40px' }}>
 			<VStack w="100%">
-				// TODO: username et autres
+				{/* // TODO: username et autres */}
 				<Text variant="h4">Username</Text>
 				<Stack direction={{ base: 'column', md: 'row' }}>
 					<Badge colorScheme="red" variant="solid" fontSize={{ base: 'small', lg: 'md' }} borderRadius="xsm">

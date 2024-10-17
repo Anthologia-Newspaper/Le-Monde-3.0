@@ -48,7 +48,7 @@ const Write = (): JSX.Element => {
 				isClosable: true,
 			});
 			return;
-		} else if (content.serialized.length <= 100) {
+		} else if (content.serialized.length < 200) {
 			toast({
 				title: 'Veuillez écrire un contenu plus long.',
 				status: 'error',
@@ -62,6 +62,7 @@ const Write = (): JSX.Element => {
 			{
 				title,
 				content: content.stringify,
+				rawContent: content.serialized,
 				topic: topics.find((t) => t.name === topic)!.id,
 				draft,
 			},
