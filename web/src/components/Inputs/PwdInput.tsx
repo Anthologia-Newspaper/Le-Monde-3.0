@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { Button, Input, InputGroup, InputProps, InputRightElement, Text, VStack } from '@chakra-ui/react';
+import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 
 const PwdInput = ({
 	inputId,
@@ -25,14 +26,14 @@ const PwdInput = ({
 					</Text>
 				)}
 			</VStack>
-			<InputRightElement w="5rem">
+			<InputRightElement w="3rem">
 				<Button
 					h="1.75rem"
 					size="sm"
 					_focus={{ outline: 'solid 3px', outlineColor: 'primary.yellow', outlineOffset: '0px' }}
 					onClick={handleClick}
 				>
-					{show ? 'Cacher' : 'Voir'}
+					{show ? <ViewIcon /> : <ViewOffIcon />}
 				</Button>
 			</InputRightElement>
 		</InputGroup>

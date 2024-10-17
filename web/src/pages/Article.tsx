@@ -13,6 +13,7 @@ import { Anthology, OfflineAnthology } from 'types/anthology';
 import { Article, OfflineArticle } from 'types/article';
 import frenchDate from 'utils/frenchDate';
 import AnthologiesModal from 'components/modals/Anthologies';
+import Editor from 'components/Editor/Editor';
 
 // TODO: redirect if wrong ID
 const ArticlePage = (): JSX.Element => {
@@ -58,8 +59,8 @@ const ArticlePage = (): JSX.Element => {
 
 	if (!user.data.isOffline ? !onlineArticle : !offlineArticle) {
 		return (
-			<VStack w="100%" h="100vh" justify="center">
-				<CircularProgress size="120px" isIndeterminate color="black" />
+			<VStack w="100%" h="100%" justify="center">
+				<CircularProgress size="120px" isIndeterminate />
 			</VStack>
 		);
 	}
@@ -133,12 +134,14 @@ const ArticlePage = (): JSX.Element => {
 								)}
 							</HStack>
 						</VStack>
-						<Text variant="p" whiteSpace="pre-line" textAlign="justify">
-							{user.data.isOffline ? offlineContent : onlineArticle!.content}
-						</Text>
+						<Editor
+							value={user.data.isOffline ? JSON.parse(offlineContent) : JSON.parse(onlineArticle!.content)}
+							readOnly={true}
+						/>
+						<Text variant="p" whiteSpace="pre-line" textAlign="justify"></Text>
 					</VStack>
 					<VStack align="left" spacing="0px" w="100%">
-						// TODO: name author
+						{/* // TODO: name author */}
 						<Text variant="h6">
 							Écrit par {user.data.isOffline ? offlineArticle!.authorId : onlineArticle!.authorId}
 						</Text>

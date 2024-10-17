@@ -11,10 +11,12 @@ import {
 	Icon,
 	Image,
 	Slide,
+	Stack,
 	StackProps,
 	Text,
 	VStack,
 	useBreakpointValue,
+	useColorMode,
 	useDisclosure,
 } from '@chakra-ui/react';
 import { CloseIcon, HamburgerIcon } from '@chakra-ui/icons';
@@ -22,7 +24,8 @@ import { FaPenFancy } from 'react-icons/fa6';
 import { IoLibrary } from 'react-icons/io5';
 import { MdAdminPanelSettings, MdTravelExplore } from 'react-icons/md';
 
-// import BlackLogo from 'theme/logos/black.svg';
+import ColorModeSwitcher from 'components/ColorModeSwitcher';
+import BlackLogo from 'theme/logos/black.svg';
 import WhiteLogo from 'theme/logos/white.svg';
 import { useOnlineUserContext } from 'contexts/onlineUser';
 import { useUserContext } from 'contexts/user';
@@ -53,18 +56,12 @@ const Option = ({
 		}}
 	>
 		<HStack position="relative" w="100%" opacity={isEnable ? '1' : '0.5'}>
-			<Icon
-				as={icon}
-				position="absolute"
-				left="40px"
-				boxSize={10}
-				color={isSelected ? 'primary.yellow !important' : 'gray.200 !important'}
-			/>
+			<Icon as={icon} position="absolute" left="40px" boxSize={10} color={isSelected ? 'primary' : 'text'} />
 			<Text
 				variant="link"
-				fontWeight={isSelected ? 'bold' : 'medium'}
+				fontWeight={isSelected ? 'bold' : 'regular'}
 				pl="120px"
-				color={isSelected ? 'primary.yellow !important' : 'gray.200 !important'}
+				color={isSelected ? 'primary' : 'text'}
 				opacity={isEnable ? '1' : '0.5'}
 			>
 				{name}
@@ -74,11 +71,12 @@ const Option = ({
 );
 
 const NavBar = ({ ...props }: StackProps): JSX.Element => {
+	const location = useLocation();
+	const navigate = useNavigate();
+	const { colorMode } = useColorMode();
 	const user = useUserContext();
 	const onlineUser = useOnlineUserContext();
 	const offlineUser = useOfflineUserContext();
-	const location = useLocation();
-	const navigate = useNavigate();
 
 	return (
 		<VStack
@@ -88,7 +86,6 @@ const NavBar = ({ ...props }: StackProps): JSX.Element => {
 			p="16px 16px 32px 0px"
 			borderTopRightRadius="sm"
 			borderBottomRightRadius="sm"
-			bg="gray.900"
 			overflowY="scroll"
 			{...props}
 			css={{
@@ -98,7 +95,7 @@ const NavBar = ({ ...props }: StackProps): JSX.Element => {
 			}}
 		>
 			<VStack w="100%" spacing="24px" mt="48px">
-				<Image src={WhiteLogo} w="100%" maxW="80px" maxH="80px" />
+				<Image src={colorMode === 'dark' ? WhiteLogo : BlackLogo} w="100%" maxW="80px" maxH="80px" />
 				<Text variant="h5" fontWeight="bold">
 					{user.data.isOffline ? '' : onlineUser.data.username}
 				</Text>
@@ -153,7 +150,14 @@ const Private = ({ children }: PrivateProps): JSX.Element => {
 	const collapseNavBar = useBreakpointValue({ base: true, xl: false });
 
 	return (
-		<HStack position="relative" align="start" h="100vh !important" spacing="0px">
+		<HStack position="relative" align="start" minH="100vh" spacing="0px">
+			<ColorModeSwitcher
+				zIndex="4"
+				position="absolute"
+				top={{ base: '8px', md: '16px', lg: '24px' }}
+				right={{ base: '8px', md: '16px', lg: '24px' }}
+			/>
+
 			{collapseNavBar ? (
 				<>
 					<Button
@@ -162,16 +166,15 @@ const Private = ({ children }: PrivateProps): JSX.Element => {
 						left={{ base: '8px', md: '16px', lg: '24px' }}
 						zIndex={100}
 						onClick={drawer.onOpen}
-						bg="gray.900 !important"
 					>
-						<Icon fontSize="24px" as={HamburgerIcon} color="white" />
+						<Icon fontSize="24px" as={HamburgerIcon} />
 						<Text ml="4px" variant="link">
 							{user.data.isOffline ? '' : onlineUser.data.username}
 						</Text>
 					</Button>
 					<Drawer isOpen={drawer.isOpen} placement="left" onClose={drawer.onClose}>
 						<DrawerOverlay />
-						<DrawerContent bg="black" w="360px !important">
+						<DrawerContent w="360px !important">
 							<NavBar />
 						</DrawerContent>
 					</Drawer>
@@ -185,14 +188,9 @@ const Private = ({ children }: PrivateProps): JSX.Element => {
 						left={{ base: '0px', lg: !slide.isOpen ? '272px' : '24px' }}
 						zIndex={100}
 						onClick={slide.onToggle}
-						bg={!slide.isOpen ? 'transparent !important' : 'gray.900 !important'}
 						onMouseOver={() => setShowCross(true)}
 					>
-						<Icon
-							fontSize={!slide.isOpen ? '12px' : '24px'}
-							as={!slide.isOpen ? CloseIcon : HamburgerIcon}
-							color="white"
-						/>
+						<Icon fontSize={!slide.isOpen ? '12px' : '24px'} as={!slide.isOpen ? CloseIcon : HamburgerIcon} />
 					</Button>
 					{/* WARNING: change index.css along with the width */}
 					<Slide direction="left" in={!slide.isOpen} style={{ zIndex: 10 }} id="slide-navbar">
@@ -205,25 +203,35 @@ const Private = ({ children }: PrivateProps): JSX.Element => {
 					</Slide>
 				</>
 			)}
-			<Box
+			<Stack
 				w="100%"
+				maxW="100% !important"
 				h="100% !important"
+				align="center"
+				ml={{ base: '0px', xl: !slide.isOpen ? '320px' : '88px' }}
 				overflowY="scroll"
 				css={{
 					'&::-webkit-scrollbar': {
 						width: '0px',
 					},
 				}}
-				p={{
-					base: '56px 8px 8px 8px',
-					md: '64px 16px 16px 16px',
-					lg: '72px 24px 24px 24px',
-					xl: '80px 160px 80px 160px',
-				}}
-				ml={{ base: '0px', xl: !slide.isOpen ? '320px' : '88px' }}
 			>
-				{children}
-			</Box>
+				<VStack
+					w="100% !important"
+					maxW="720px"
+					h="100% !important"
+					overflow="visible !important"
+					overflowX="hidden"
+					p={{
+						base: '56px 16px 8px 16px',
+						sm: '64px 24px 16px 24px',
+						md: '72px 0px 24px 0px',
+						lg: '80px 0px 80px 0px',
+					}}
+				>
+					{children}
+				</VStack>
+			</Stack>
 		</HStack>
 	);
 };

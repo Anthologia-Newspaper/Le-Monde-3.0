@@ -16,7 +16,7 @@ import Folder from 'pages/Folder';
 import Home from 'pages/Home';
 import Inscription from 'pages/Inscription';
 import Library from 'pages/Library';
-import Settings from 'pages/Settings';
+import Settings from 'pages/Settings/Index';
 import Write from 'pages/Write';
 import Writings from 'pages/Writings';
 

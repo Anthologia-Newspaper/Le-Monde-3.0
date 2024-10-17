@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Link as RouteLink, useNavigate } from 'react-router-dom';
-import { Button, Input, Link } from '@chakra-ui/react';
+import { Button, Divider, Input, Link, VStack } from '@chakra-ui/react';
 
 import { useUIContext } from 'contexts/ui';
 import PwdInput from 'components/Inputs/PwdInput';
@@ -22,22 +22,24 @@ const Connexion = (): JSX.Element => {
 	}, [loginInput, pwdInut]);
 
 	return (
-		<>
+		<VStack w="100%" align="center">
 			<Input
 				id="connexion-email-input"
-				variant="primary-1"
 				placeholder="e-mail ou nom d'utilisateur"
 				onChange={(e) => setLoginInput(e.target.value)}
+				color="white"
 			/>
 			<PwdInput
 				inputId="connexion-pwd-input"
-				variant="primary-1"
 				placeholder="mot de passe"
 				onChange={(e) => setPwdInut(e.target.value)}
+				color="white"
 			/>
 			<Button
 				id="connexion-connexion-btn"
-				variant="primary-yellow"
+				variant="primary"
+				bg="#4bebf9 !important"
+				color="#000f4a"
 				isDisabled={!validation}
 				onClick={async () =>
 					await ui.online.auth.sign.in({ identifier: loginInput, password: pwdInut }, () => navigate('/bibliotheque'))
@@ -45,12 +47,12 @@ const Connexion = (): JSX.Element => {
 			>
 				Connexion
 			</Button>
-			<Link as={RouteLink} to="/inscription" w="100%">
-				<Button id="connexion-inscription-btn" variant="primary-white">
-					Inscription
-				</Button>
+			<br />
+			<Divider />
+			<Link id="connexion-inscription-txt" as={RouteLink} to="/inscription" color="white">
+				<b>Inscription</b>
 			</Link>
-		</>
+		</VStack>
 	);
 };
 

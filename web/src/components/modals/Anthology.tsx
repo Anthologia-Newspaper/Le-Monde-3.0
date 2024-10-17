@@ -46,21 +46,13 @@ const AnthologyModal = ({
 			}}
 		>
 			<ModalOverlay />
-			<ModalContent bg="gray.900">
-				<ModalHeader color="white">{type === 'CREATE' ? 'Nouveau dossier' : 'Modification du dossier'}</ModalHeader>
-				<ModalCloseButton color="white" />
+			<ModalContent>
+				<ModalHeader>{type === 'CREATE' ? 'Nouveau dossier' : 'Modification du dossier'}</ModalHeader>
+				<ModalCloseButton />
 				<ModalBody>
 					<VStack spacing="8px">
+						<Input placeholder="Titre" onChange={(e) => setNewName(e.target.value)} value={newName} />
 						<Input
-							variant="primary-1"
-							bg="gray.700"
-							placeholder="Titre"
-							onChange={(e) => setNewName(e.target.value)}
-							value={newName}
-						/>
-						<Input
-							variant="primary-1"
-							bg="gray.700"
 							placeholder="Description"
 							onChange={(e) => setNewDescription(e.target.value)}
 							value={newDescription}
@@ -70,7 +62,6 @@ const AnthologyModal = ({
 
 				<ModalFooter>
 					<Button
-						variant="primary-yellow"
 						onClick={async () => {
 							await action(newName, newDescription);
 							// TODO: title and description cleared even if action failed

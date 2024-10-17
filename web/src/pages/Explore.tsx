@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { Grid, GridItem, HStack, Select, Tooltip, VStack, useDisclosure } from '@chakra-ui/react';
-import { FaFolderPlus } from 'react-icons/fa';
+import { Grid, GridItem, Select, Stack, VStack, useDisclosure } from '@chakra-ui/react';
 
 import { useUIContext } from 'contexts/ui';
 import { useUserContext } from 'contexts/user';
@@ -10,7 +9,7 @@ import { Topic } from 'types/topic';
 import { Article, OfflineArticle } from 'types/article';
 import { Anthology, OfflineAnthology } from 'types/anthology';
 import SearchInput from 'components/Inputs/SearchInput';
-import ArticleCard from 'components/Cards/ArticleCard';
+import ReaderArticleCard from 'components/Cards/ReaderArticleCard';
 import AnthologiesModal from 'components/modals/Anthologies';
 
 // TODO: improve online search
@@ -65,20 +64,16 @@ const Explore = (): JSX.Element => {
 	return (
 		<>
 			<VStack w="100%" spacing={{ base: '8px', md: '12px', lg: '16px' }} align="start">
-				<HStack>
+				<Stack w="100%" direction={{ base: 'column', sm: 'row' }}>
 					<SearchInput
 						value={search}
-						inputId="favoris-search-input"
-						w={{ base: '100%', xl: '640px' }}
+						w={{ base: '100%', md: '560px' }}
 						placeholder="Cherchez parmis vos articles favoris"
 						onChange={(e) => setSearch(e.target.value)}
-						variant="primary-1"
 					/>
 					{!user.data.isOffline && (
 						<Select
-							w="25%"
-							id="write-topic-input"
-							variant="primary-1"
+							flexGrow={1}
 							onChange={(e) => setTopic(topics.find((t) => t.name === e.target.value))}
 							value={topic?.name}
 							sx={{
@@ -92,22 +87,14 @@ const Explore = (): JSX.Element => {
 							))}
 						</Select>
 					)}
-				</HStack>
-				<Grid
-					templateColumns={{
-						base: 'repeat(1, 1fr)',
-						md: 'repeat(2, minmax(0, 1fr));',
-						'2xl': 'repeat(3, minmax(0, 1fr));',
-					}}
-					gap={{ base: 2, lg: 4 }}
-					w="100%"
-				>
+				</Stack>
+				<Grid templateColumns="repeat(auto-fill, minmax(280px, 1fr))" gap={4} w="100%">
 					{!user.data.isOffline
 						? onlineArticles
 								.filter((a) => (search !== '' ? a.title.includes(search) : true))
 								.map((article, index) => (
 									<GridItem key={index.toString()}>
-										<ArticleCard
+										<ReaderArticleCard
 											navigateUrl={`/articles/${article.id}`}
 											title={article.title}
 											// TODO: author name
@@ -116,27 +103,18 @@ const Explore = (): JSX.Element => {
 											// TODO: topic name
 											topic={`Topic #${article.topicId}`}
 											content={article.content}
-											actions={[
-												<Tooltip label="Ajouter à un dossier">
-													<span>
-														<FaFolderPlus
-															onClick={() => {
-																setOnlineArticleToAdd(article.id);
-																onOpen();
-															}}
-															color="white"
-														/>
-													</span>
-												</Tooltip>,
-											]}
 											likes={article.likeCounter}
 											views={article.viewCounter}
+											addToFolderAction={async () => {
+												setOnlineArticleToAdd(article.id);
+												onOpen();
+											}}
 										/>
 									</GridItem>
 								))
 						: offlineArticles.map((article, index) => (
 								<GridItem key={index.toString()}>
-									<ArticleCard
+									<ReaderArticleCard
 										navigateUrl={`/articles/${article.cid}`}
 										title={article.title}
 										// TODO: author name ? Or nothing
@@ -145,20 +123,13 @@ const Explore = (): JSX.Element => {
 										// TODO: topic name ? Or nothing
 										topic={`Topic #${article.topicId}`}
 										content={article.preview || ''}
-										actions={[
-											<Tooltip label="Ajouter à un dossier">
-												<span>
-													<FaFolderPlus
-														onClick={() => {
-															setOfflineArticleToAdd(article.cid);
-															onOpen();
-														}}
-														size="20px"
-														color="white"
-													/>
-												</span>
-											</Tooltip>,
-										]}
+										likes={-1}
+										views={-1}
+										// TODO: add / remove favorites
+										addToFolderAction={async () => {
+											setOfflineArticleToAdd(article.cid);
+											onOpen();
+										}}
 									/>
 								</GridItem>
 						  ))}

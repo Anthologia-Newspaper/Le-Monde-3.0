@@ -28,11 +28,11 @@ describe('[LAYOUT] Inscription page', () => {
 	});
 
 	it('Inscription button', () => {
-		cy.get('#inscription-inscription-btn').should('contain', 'Inscription');
+		cy.get('#inscription-inscription-txt').should('contain', 'Inscription');
 	});
 
 	it('Connexion button', () => {
-		cy.get('#inscription-connexion-btn').should('contain', 'Connexion');
+		cy.get('#inscription-connexion-txt').should('contain', 'Connexion');
 	});
 });
 
@@ -42,6 +42,6 @@ describe('[LINKS] Inscription page', () => {
 	});
 
 	it('Link to inscription page', () => {
-		cy.get('#inscription-connexion-btn').click().url().should('eq', `${Cypress.config().baseUrl}/connexion`);
+		cy.get('#inscription-connexion-txt').click().url().should('eq', `${Cypress.config().baseUrl}/connexion`);
 	});
 });
