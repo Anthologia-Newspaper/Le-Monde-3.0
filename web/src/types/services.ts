@@ -7,6 +7,7 @@ export type ParamsArticlesCreate = {
 	title: string;
 	subtitle?: string;
 	content: string;
+	rawContent: string;
 	topic: number;
 	draft: boolean;
 };

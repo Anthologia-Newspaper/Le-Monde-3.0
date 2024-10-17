@@ -19,7 +19,7 @@ export const many = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				200: { message: 'Dossiers filtrés.', subMessage: res.message },
+				200: { message: 'Dossiers filtrés.' },
 			},
 		});
 		if (res.status === 'success') {
@@ -41,12 +41,13 @@ export const one = async (
 		handleToast({
 			res,
 			settings: {
-				showIfSuccess: true,
+				showIfSuccess: false,
 				showIfNotSuccess: true,
 				showIfAuthError: false,
 			},
 			messages: {
-				200: { message: 'Dossiers trouvé.', subMessage: res.message },
+				200: { message: 'Dossier trouvé.', subMessage: '' },
+				404: { message: 'Dossier introuvable.', subMessage: '' },
 			},
 		});
 		if (res.status === 'success') {

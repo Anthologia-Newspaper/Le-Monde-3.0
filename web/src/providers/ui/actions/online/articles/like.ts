@@ -20,7 +20,6 @@ const like = async (
 			messages: {
 				200: {
 					message: !params.isLiked ? 'Article ajouté aux favoris.' : 'Article supprimé des favoris.',
-					subMessage: res.message,
 				},
 			},
 		});

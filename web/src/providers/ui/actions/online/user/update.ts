@@ -17,7 +17,7 @@ export const password = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				200: { message: 'Mot de passe modifié.', subMessage: res.message },
+				200: { message: 'Mot de passe modifié.' },
 			},
 		});
 	} catch (error) {
@@ -40,7 +40,7 @@ export const email = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				200: { message: 'Email modifié.', subMessage: res.message },
+				200: { message: 'Email modifié.' },
 			},
 		});
 	} catch (error) {
@@ -63,7 +63,7 @@ export const username = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				200: { message: "Nom d'utilisateur modifié.", subMessage: res.message },
+				200: { message: "Nom d'utilisateur modifié." },
 			},
 		});
 	} catch (error) {

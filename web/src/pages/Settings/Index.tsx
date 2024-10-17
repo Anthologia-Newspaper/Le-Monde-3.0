@@ -50,6 +50,12 @@ const Settings = (): JSX.Element => {
 		offlineUser.methods.config.setStep(activeStep);
 	}, [activeStep]);
 
+	useEffect(() => {
+		if (activeStep !== offlineUser.data.config.step) {
+			setActiveStep(offlineUser.data.config.step);
+		}
+	}, [offlineUser.data.config.step]);
+
 	return (
 		<Tabs isFitted variant="enclosed" w="100%" h="100%">
 			<TabList>

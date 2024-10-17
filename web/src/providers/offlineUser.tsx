@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@chakra-ui/react';
+import axios, { AxiosError } from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
 import { OfflineUser } from 'types/user';
@@ -7,10 +9,15 @@ import { OfflineArticle } from 'types/article';
 import { OfflineAnthologyArticle, OfflineCreateAnthology, OfflineUpdateAnthology } from 'types/offline';
 import OfflineUserContext, { OfflineUserContextType } from 'contexts/offlineUser';
 import loadFromLocalStorage from 'utils/loadFromLocalStorage';
+import { useUserContext } from 'contexts/user';
 
 // TODO: clean in different files
 // TODO: connect account settings to backend
 const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
+	const toast = useToast();
+	const navigate = useNavigate();
+	const user = useUserContext();
+
 	const defaultOfflineUser: OfflineUser = {
 		config: {
 			gateway: '',
@@ -29,15 +36,34 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 	const [articlesCatalog, setArticlesCatalog] = useState<OfflineArticle[]>([]);
 
 	useEffect(() => {
+		if (offlineUser) {
+			localStorage.setItem('offlineUser', JSON.stringify(offlineUser));
+		}
+	}, [offlineUser]);
+
+	useEffect(() => {
 		const localStorageOfflineUser = localStorage.getItem('offlineUser');
 		if (localStorageOfflineUser) setOfflineUser(JSON.parse(localStorageOfflineUser));
 	}, []);
 
 	useEffect(() => {
-		if (offlineUser) {
-			localStorage.setItem('offlineUser', JSON.stringify(offlineUser));
+		if (user.data.isOffline && articlesCatalog.length === 0 && offlineUser.config.step > 2) {
+			setOfflineUser((u) => ({
+				...u,
+				config: {
+					...u.config,
+					step: 2,
+				},
+			}));
+			toast({
+				title: 'Veuillez rafraîchir les articles.',
+				status: 'warning',
+				duration: 5000,
+				isClosable: true,
+			});
+			navigate('/reglages');
 		}
-	}, [offlineUser]);
+	}, [articlesCatalog]);
 
 	const OfflineUserContextValue: OfflineUserContextType = {
 		data: offlineUser,
@@ -56,7 +82,7 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 				setStep: (step: number) => setOfflineUser((u) => ({ ...u, config: { ...u.config, step } })),
 				testGateway: async () => {
 					try {
-						const cid = 'QmRHrMFdxqeht72REo9e2YUCVuYxKSgqvViHnb6Z3hhMxm';
+						const cid = 'QmcfrX5EQLUUD5MaG5X5YfJVVd4VbGLtAEsGWoQhskCwgg';
 						const file = await OfflineUserContextValue.methods.ipfs.get<{ articles: OfflineArticle[] }>(cid);
 						console.log(file);
 						return file.articles.length > 0;
@@ -70,7 +96,7 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 				loadCatalog: async () => {
 					// TODO: optimise it (sorting) using decentralized cloud functions
 					try {
-						const cid = 'QmRHrMFdxqeht72REo9e2YUCVuYxKSgqvViHnb6Z3hhMxm';
+						const cid = 'QmcfrX5EQLUUD5MaG5X5YfJVVd4VbGLtAEsGWoQhskCwgg';
 						const file = await OfflineUserContextValue.methods.ipfs.get<{
 							articles: OfflineArticle[];
 						}>(cid);
@@ -156,6 +182,7 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 					}));
 					return true;
 				},
+				// TODO: return error when article already in anthology
 				addArticle: (params: OfflineAnthologyArticle): boolean => {
 					const anthology = offlineUser.anthologies.find((a) => a.id === params.id);
 					if (!anthology) return false;
@@ -194,6 +221,27 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 						console.log(res);
 						return res.data;
 					} catch (error) {
+						if (
+							error instanceof AxiosError &&
+							error.code === 'ERR_NETWORK' &&
+							cid !== 'QmcfrX5EQLUUD5MaG5X5YfJVVd4VbGLtAEsGWoQhskCwgg'
+						) {
+							setOfflineUser((u) => ({
+								...u,
+								config: {
+									...u.config,
+									step: 1,
+								},
+							}));
+							toast({
+								title: 'Gateway inaccessible.',
+								description: 'Veuillez en renseigner une autre.',
+								status: 'error',
+								duration: 9000,
+								isClosable: true,
+							});
+							navigate('/reglages');
+						}
 						throw error;
 					}
 				},

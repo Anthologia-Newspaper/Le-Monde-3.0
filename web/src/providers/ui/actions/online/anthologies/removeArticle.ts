@@ -21,7 +21,7 @@ const removeArticles = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				200: { message: 'Article retiré du dossier.', subMessage: res.message },
+				200: { message: 'Article retiré du dossier.' },
 			},
 		});
 		if (res.status === 'success') {

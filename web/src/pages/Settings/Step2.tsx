@@ -7,10 +7,11 @@ import { useOfflineUserContext } from 'contexts/offlineUser';
 
 const Step2 = ({ setActiveStep }: { setActiveStep: (v: number) => void }): JSX.Element => {
 	const offlineUser = useOfflineUserContext();
-	const [isRefreshWorking, setIsRefreshWorking] = useState<true | false | 'loading'>(false);
+	const [isRefreshWorking, setIsRefreshWorking] = useState<true | false | 'loading' | 'none'>('none');
 	const [timeLeft, setTimeLeft] = useState(0);
 
 	// TODO: Annoying as it needs to be executed each refresh
+	// But then don't redirect here if refresh articles needed: do it automatically without redirection
 	const refresh = async () => {
 		setTimeLeft(30);
 		try {
@@ -66,20 +67,22 @@ const Step2 = ({ setActiveStep }: { setActiveStep: (v: number) => void }): JSX.E
 							</Text>
 							<SpinnerIcon color="orange" />
 						</HStack>
-					) : isRefreshWorking ? (
+					) : isRefreshWorking === true ? (
 						<HStack>
 							<Text variant="p" color="green !important">
 								Rafraîchissement réussi !
 							</Text>
 							<CheckIcon color="green.500" />
 						</HStack>
-					) : (
+					) : isRefreshWorking === false ? (
 						<HStack>
 							<Text variant="p" color="red !important">
 								Rafraîchissement échoué, re-testez votre gateway.
 							</Text>
 							<CloseIcon color="red.500" />
 						</HStack>
+					) : (
+						<></>
 					)}
 				</VStack>
 			</VStack>
@@ -87,7 +90,7 @@ const Step2 = ({ setActiveStep }: { setActiveStep: (v: number) => void }): JSX.E
 				<Button maxW="240px" onClick={() => setActiveStep(1)}>
 					Précédent
 				</Button>
-				<Button maxW="240px" onClick={() => setActiveStep(4)} isDisabled={!isRefreshWorking}>
+				<Button maxW="240px" onClick={() => setActiveStep(4)} isDisabled={isRefreshWorking !== true}>
 					Suivant
 				</Button>
 			</HStack>

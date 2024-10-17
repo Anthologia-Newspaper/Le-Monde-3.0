@@ -34,6 +34,18 @@ const Folder = (): JSX.Element => {
 	}, [refresh]);
 
 	useEffect(() => {
+		if (!user.data.isOffline && onlineAnthology) {
+			// TODO: for now articles are not Article[]
+			// setOnlineArticles(onlineAnthology.articles);
+			ui.online.articles.search.allPublications({ anthologyId: onlineAnthology.id }, setOnlineArticles);
+		}
+	}, [onlineAnthology]);
+
+	useEffect(() => {
+		if (user.data.isOffline && offlineAnthology) ui.offline.anthologies.articles(anthologyId!, setOfflineArticles);
+	}, [offlineAnthology]);
+
+	useEffect(() => {
 		const timer = setTimeout(() => {
 			// TODO: search of articles inside folder
 			if (!user.data.isOffline) {
@@ -45,7 +57,12 @@ const Folder = (): JSX.Element => {
 		};
 	}, [search]);
 
-	if (!user.data.isOffline ? !onlineAnthology : !offlineAnthology) {
+	if (
+		!user.data.isOffline
+			? !onlineAnthology || !onlineArticles
+			: // Very ugly: find a way in one file to check if refresh articles needed when offline
+			  !offlineAnthology || !offlineArticles || (offlineArticles.length >= 1 && offlineArticles[0] === undefined)
+	) {
 		return (
 			<VStack w="100%" h="100%" justify="center">
 				<CircularProgress size="120px" isIndeterminate />
@@ -61,34 +78,23 @@ const Folder = (): JSX.Element => {
 				w={{ base: '100%', xl: '640px' }}
 				placeholder="Cherchez parmis vos articles favoris"
 				onChange={(e) => setSearch(e.target.value)}
-				variant="primary-1"
 			/>
-			<Tag bg="primary.yellow">
+			<Tag>
 				{!user.data.isOffline
 					? `${onlineArticles.length} article${onlineArticles.length === 1 ? '' : 's'}`
 					: `${offlineArticles.length} article${offlineArticles.length === 1 ? '' : 's'}`}
 			</Tag>
-			<Grid
-				templateColumns={{
-					base: 'repeat(1, 1fr)',
-					md: 'repeat(2, minmax(0, 1fr));',
-					'2xl': 'repeat(3, minmax(0, 1fr));',
-				}}
-				gap={{ base: 2, lg: 4 }}
-				w="100%"
-			>
+			<Grid templateColumns="repeat(auto-fill, minmax(280px, 1fr))" gap={4} w="100%">
 				{!user.data.isOffline
 					? onlineArticles.map((article, index) => (
 							<GridItem key={index.toString()}>
 								<ArticleCard
 									navigateUrl={`/articles/${article.id.toString()}`}
 									title={article.title}
-									// TODO: author name
-									author={`Author #${article.authorId}`}
+									author={article.author.username}
 									date={new Date(article.createdAt).toLocaleDateString('fr-FR')}
-									// TODO: Topic name
-									topic={`Topic #${article.topicId}`}
-									content={article.content}
+									topic={article.topic.name}
+									rawContent={article.rawContent}
 									// TODO: add / remove favorites
 									// TODO: add article to other anthology
 									likes={article.likeCounter}
@@ -106,12 +112,10 @@ const Folder = (): JSX.Element => {
 								<ArticleCard
 									navigateUrl={`/articles/${article.cid}`}
 									title={article.title}
-									// TODO: author name ? Or nothing
-									author={`Author #${article.authorId}`}
+									author={article.author}
 									date={new Date(article.createdAt).toLocaleDateString('fr-FR')}
-									// TODO: Topic name ? Or nothing
-									topic={`Topic #${article.topicId}`}
-									content={article.preview || ''}
+									topic={article.topic}
+									rawContent={article.preview}
 									// TODO: add / remove article to favorites
 									// TODO: add article to other anthology
 									likes={-1}

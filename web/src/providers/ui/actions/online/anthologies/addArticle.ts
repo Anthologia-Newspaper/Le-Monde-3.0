@@ -21,7 +21,7 @@ const addArticle = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				200: { message: 'Article ajouté au dossier.', subMessage: res.message },
+				200: { message: 'Article ajouté au dossier.' },
 			},
 		});
 		if (res.status === 'success') {

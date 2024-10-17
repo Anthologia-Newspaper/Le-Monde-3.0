@@ -109,8 +109,7 @@ const Library = (): JSX.Element => {
 										navigateUrl={`/bibliotheque/dossiers/${anthology.id}`}
 										name={anthology.name}
 										description={anthology.description}
-										// TODO: number of articles
-										nbArticles={100}
+										nbArticles={anthology.articleCount}
 										deleteAnthology={async () =>
 											await ui.online.anthologies.delete(anthology.id, () => setRefresh((r) => r + 1))
 										}

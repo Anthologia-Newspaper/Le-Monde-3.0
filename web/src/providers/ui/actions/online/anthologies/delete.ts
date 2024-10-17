@@ -17,7 +17,7 @@ const hardDelete = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				200: { message: 'Dossier supprimé.', subMessage: res.message },
+				200: { message: 'Dossier supprimé.' },
 			},
 		});
 		if (res.status === 'success') {

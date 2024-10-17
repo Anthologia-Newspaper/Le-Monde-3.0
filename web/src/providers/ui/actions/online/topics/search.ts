@@ -17,7 +17,7 @@ export const all = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				200: { message: 'Sujets récupérés.', subMessage: res.message },
+				200: { message: 'Sujets récupérés.' },
 			},
 		});
 		if (res.status === 'success') {

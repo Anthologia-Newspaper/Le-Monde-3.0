@@ -18,7 +18,7 @@ const create = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				201: { message: 'Dossier créé.', subMessage: res.message },
+				201: { message: 'Dossier créé.' },
 			},
 		});
 		if (res.status === 'success') {

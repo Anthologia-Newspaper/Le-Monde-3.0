@@ -83,9 +83,22 @@ const Step3 = ({ setActiveStep }: { setActiveStep: (v: number) => void }): JSX.E
 					</Text>
 					<Button
 						onClick={async () => {
-							// TODO: verify with backend the user is redirected if not already login
-							if (user.data.isOffline) await ui.online.user.me();
+							// TODO: toast to say user not logged in if offline to online without auth
 							user.methods.toggleIsOfflineState();
+							if (user.data.isOffline) {
+								await ui.online.user.me();
+							} else {
+								if (offlineUser.articlesCatalog === undefined || offlineUser.articlesCatalog.length === 0) {
+									// TODO: duplicated code, change logic
+									toast({
+										title: 'Veuillez rafraîchir les articles.',
+										status: 'warning',
+										duration: 5000,
+										isClosable: true,
+									});
+									setActiveStep(2);
+								}
+							}
 						}}
 					>
 						{user.data.isOffline ? 'Mode hors-ligne sélectionné' : 'Mode en-ligne sélectionné'}

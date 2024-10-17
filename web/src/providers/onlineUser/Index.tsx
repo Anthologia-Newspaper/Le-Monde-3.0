@@ -62,6 +62,7 @@ const UserProvider = ({ children }: { children: JSX.Element }) => {
 			user: {
 				me: () => actions.user.me(data.updateAll),
 				update: {
+					// TODO: it's maybe not clean to update the state of data here, maybe 'me' should be called ?
 					password: (params: ParamsUserUpdatePassword) => actions.user.update.password(params),
 					email: (newEmail: string) => actions.user.update.email({ newEmail, callback: data.updateEmail }),
 					username: (newUsername: string) =>

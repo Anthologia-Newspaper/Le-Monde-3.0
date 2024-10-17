@@ -1,3 +1,5 @@
+import { Article } from './article';
+
 export type Anthology = {
 	id: number;
 	createdAt: Date;
@@ -6,6 +8,8 @@ export type Anthology = {
 	name: string;
 	description: string;
 	isPublic: boolean;
+	articleCount: number;
+	articles: Article[];
 };
 
 export type OfflineAnthology = {

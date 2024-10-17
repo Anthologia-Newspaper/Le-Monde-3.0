@@ -1,4 +1,5 @@
 import { Topic } from './topic';
+import { OnlineUser } from './user';
 
 export type Article = {
 	id: number;
@@ -6,14 +7,14 @@ export type Article = {
 	updatedAt: Date;
 	draft: boolean;
 	title: string;
-	subtitle: string;
 	content: string;
-	authorId: number;
+	rawContent: string;
+	// authorId: number;
+	author: OnlineUser;
 	viewCounter: number;
 	likeCounter: number;
-	// TODO: clean this -> topicId or topic for all endpoints ?
-	topicId?: number;
-	topic?: Topic;
+	// topicId: number;
+	topic: Topic;
 };
 
 export type OfflineArticle = {
@@ -21,11 +22,7 @@ export type OfflineArticle = {
 	createdAt: Date;
 	updatedAt: Date;
 	title: string;
-	subtitle: string;
-	content?: string;
-	preview?: string;
-	authorId: number;
-	// TODO: clean this -> topicId or topic for all endpoints ?
-	topicId?: number;
-	topic?: Topic;
+	author: string;
+	topic: string;
+	preview: string;
 };

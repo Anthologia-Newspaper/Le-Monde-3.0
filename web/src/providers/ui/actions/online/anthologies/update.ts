@@ -23,7 +23,7 @@ const update = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				200: { message: 'Dossier modifié.', subMessage: res.message },
+				200: { message: 'Dossier modifié.' },
 			},
 		});
 		if (res.status === 'success') {
