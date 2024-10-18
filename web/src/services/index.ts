@@ -10,7 +10,7 @@ import topics from './topics';
 const servicesURL = axios.create({
 	withCredentials: true,
 	baseURL: context.config.env.BACKEND_URL,
-	timeout: 3000,
+	timeout: 5000,
 });
 
 const services = {
