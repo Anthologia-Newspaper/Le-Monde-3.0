@@ -36,7 +36,7 @@ const Home = (): JSX.Element => {
 			</Link>
 			<br />
 			<Divider />
-			<Text cursor="pointer" onClick={enterOfflineMode}>
+			<Text color="white" cursor="pointer" onClick={enterOfflineMode}>
 				Utilisez Anthologia <b>hors-ligne</b> pour lire dans un État censuré.
 			</Text>
 		</>
