@@ -82,7 +82,7 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 				setStep: (step: number) => setOfflineUser((u) => ({ ...u, config: { ...u.config, step } })),
 				testGateway: async () => {
 					try {
-						const cid = 'QmcfrX5EQLUUD5MaG5X5YfJVVd4VbGLtAEsGWoQhskCwgg';
+						const cid = 'QmYYtksvUJTUGjUjBVcccEybkeTpEKpiw3QVK25v5HXMsA';
 						const file = await OfflineUserContextValue.methods.ipfs.get<{ articles: OfflineArticle[] }>(cid);
 						console.log(file);
 						return file.articles.length > 0;
@@ -96,7 +96,7 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 				loadCatalog: async () => {
 					// TODO: optimise it (sorting) using decentralized cloud functions
 					try {
-						const cid = 'QmcfrX5EQLUUD5MaG5X5YfJVVd4VbGLtAEsGWoQhskCwgg';
+						const cid = 'QmYYtksvUJTUGjUjBVcccEybkeTpEKpiw3QVK25v5HXMsA';
 						const file = await OfflineUserContextValue.methods.ipfs.get<{
 							articles: OfflineArticle[];
 						}>(cid);
@@ -224,7 +224,7 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 						if (
 							error instanceof AxiosError &&
 							error.code === 'ERR_NETWORK' &&
-							cid !== 'QmcfrX5EQLUUD5MaG5X5YfJVVd4VbGLtAEsGWoQhskCwgg'
+							cid !== 'QmYYtksvUJTUGjUjBVcccEybkeTpEKpiw3QVK25v5HXMsA'
 						) {
 							setOfflineUser((u) => ({
 								...u,

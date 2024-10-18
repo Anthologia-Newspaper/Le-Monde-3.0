@@ -42,10 +42,12 @@ const ArticlePage = (): JSX.Element => {
 			ui.online.anthologies.search.many({ author: 'me' }, setOnlineAnthologies);
 			ui.online.articles.search.onePublication(+articleId!, setOnlineArticle, () => navigate('/bibliotheque'));
 		} else {
-			ui.offline.articles.search.one(articleId!, setOfflineArticle);
-			ui.offline.articles.getContent(articleId!, setOfflineContent);
-			setOfflineAnthologies(offlineUser.data.anthologies);
-			setOfflineLikedArticles(offlineUser.data.articles.liked);
+			if (offlineUser.articlesCatalog.length !== 0 && offlineUser.articlesCatalog[0] !== undefined) {
+				ui.offline.articles.search.one(articleId!, setOfflineArticle);
+				ui.offline.articles.getContent(articleId!, setOfflineContent);
+				setOfflineAnthologies(offlineUser.data.anthologies);
+				setOfflineLikedArticles(offlineUser.data.articles.liked);
+			}
 		}
 	}, [refresh]);
 
@@ -57,7 +59,14 @@ const ArticlePage = (): JSX.Element => {
 		}
 	}, [onlineArticle, offlineArticle]);
 
-	if (!user.data.isOffline ? !onlineArticle : !offlineArticle || !offlineContent) {
+	if (
+		!user.data.isOffline
+			? !onlineArticle
+			: !offlineArticle ||
+			  !offlineContent ||
+			  offlineUser.articlesCatalog.length === 0 ||
+			  offlineUser.articlesCatalog[0] === undefined
+	) {
 		return (
 			<VStack w="100%" h="100%" justify="center">
 				<CircularProgress size="120px" isIndeterminate />
