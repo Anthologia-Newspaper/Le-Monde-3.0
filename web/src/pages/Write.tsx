@@ -26,7 +26,7 @@ const Write = (): JSX.Element => {
 	const toast = useToast();
 	const [topics, setTopics] = useState<Topic[]>([]);
 	const [title, setTitle] = useState('');
-	const [topic, setTopic] = useState('');
+	const [topic, setTopic] = useState<Topic | undefined>(undefined);
 	const [content, setContent] = useState({ stringify: '', serialized: '' });
 
 	const uiCreateArticle = async (draft: boolean) => {
@@ -39,41 +39,38 @@ const Write = (): JSX.Element => {
 				duration: 9000,
 				isClosable: true,
 			});
-			return;
-		} else if (topic === '') {
+		} else if (topic === undefined) {
 			toast({
 				title: 'Veuillez sélectionner un sujet.',
 				status: 'error',
 				duration: 9000,
 				isClosable: true,
 			});
-			return;
-		} else if (content.serialized.length < 200) {
+		} else if ((draft && content.serialized.length < 2) || (!draft && content.serialized.length < 200)) {
 			toast({
 				title: 'Veuillez écrire un contenu plus long.',
 				status: 'error',
 				duration: 9000,
 				isClosable: true,
 			});
-			return;
+		} else {
+			await ui.online.articles.create(
+				{
+					title,
+					content: content.stringify,
+					rawContent: content.serialized,
+					topic: topic.id,
+					draft,
+				},
+				(id: number) => {
+					if (!draft) {
+						navigate(`/articles/${id}`);
+					} else {
+						navigate(`/redactions`);
+					}
+				},
+			);
 		}
-
-		await ui.online.articles.create(
-			{
-				title,
-				content: content.stringify,
-				rawContent: content.serialized,
-				topic: topics.find((t) => t.name === topic)!.id,
-				draft,
-			},
-			(id: number) => {
-				if (!draft) {
-					navigate(`/articles/${id}`);
-				} else {
-					navigate(`/redactions`);
-				}
-			},
-		);
 	};
 
 	useEffect(() => {
@@ -87,14 +84,15 @@ const Write = (): JSX.Element => {
 					<Text>De quoi parle votre article ?</Text>
 					<Select
 						w="auto"
-						onChange={(e) => setTopic(e.target.value)}
-						value={topic}
+						onChange={(e) => setTopic(topics.find((t) => t.name === e.target.value))}
+						value={topic?.id || ''}
 						sx={{
 							'> option': {
 								background: '#212529',
 							},
 						}}
 					>
+						<option value="">-- À choisir --</option>
 						{topics.map((t, index) => (
 							<option key={index}>{t.name}</option>
 						))}
@@ -106,7 +104,7 @@ const Write = (): JSX.Element => {
 						w={{ base: '100% !important', sm: 'fit-content !important' }}
 						as={Button}
 						rightIcon={<ChevronDownIcon />}
-						isDisabled={title === '' || topic === ''}
+						isDisabled={title === '' || topic === undefined}
 					>
 						Sauvegarder
 					</MenuButton>

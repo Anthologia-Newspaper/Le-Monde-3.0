@@ -90,6 +90,7 @@ const Explore = (): JSX.Element => {
 								},
 							}}
 						>
+							<option value="">-- Tous --</option>
 							{topics.map((t, index) => (
 								<option key={index}>{t.name}</option>
 							))}
