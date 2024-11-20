@@ -85,7 +85,7 @@ const Write = (): JSX.Element => {
 					<Select
 						w="auto"
 						onChange={(e) => setTopic(topics.find((t) => t.name === e.target.value))}
-						value={topic?.id || ''}
+						value={topic?.name}
 						sx={{
 							'> option': {
 								background: '#212529',
