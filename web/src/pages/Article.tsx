@@ -5,6 +5,8 @@ import { Badge, CircularProgress, HStack, Text, Tooltip, useDisclosure, VStack }
 import { FcLikePlaceholder } from 'react-icons/fc';
 import { FaFolderPlus } from 'react-icons/fa';
 import { FcLike } from 'react-icons/fc';
+import { createYooptaEditor, YooptaContentValue } from '@yoopta/editor';
+import { plainText } from '@yoopta/exports';
 
 import { useUIContext } from 'contexts/ui';
 import { useUserContext } from 'contexts/user';
@@ -14,8 +16,6 @@ import { Article, OfflineArticle } from 'types/article';
 import frenchDate from 'utils/frenchDate';
 import AnthologiesModal from 'components/modals/Anthologies';
 import Editor from 'components/Editor/Editor';
-import { createYooptaEditor } from '@yoopta/editor';
-import { plainText } from '@yoopta/exports';
 
 const ArticlePage = (): JSX.Element => {
 	const ui = useUIContext();
@@ -38,35 +38,38 @@ const ArticlePage = (): JSX.Element => {
 	const [offlineAnthologies, setOfflineAnthologies] = useState<OfflineAnthology[]>([]);
 	const [offlineLikedArticles, setOfflineLikedArticles] = useState<OfflineArticle[]>([]);
 
-	const getArticleContent = () => {
+	const tryParseContent = (): YooptaContentValue | undefined => {
 		try {
-			if (user.data.isOffline) { //checking if we are online
-			return offlineContent && offlineContent.trim() !== ''
-				? JSON.parse(offlineContent) // verifying if the offline content is not empty and json.parse it
-				: null;
+			if (user.data.isOffline) {
+				//checking if we are online
+				return offlineContent && offlineContent.trim() !== ''
+					? JSON.parse(offlineContent) // verifying if the offline content is not empty and json.parse it
+					: undefined;
 			} else {
-			return onlineArticle?.content && onlineArticle.content.trim() !== ''
-				? JSON.parse(onlineArticle.content) // verifying if the online content is not empty and json.parse it
-				: null;
+				return onlineArticle?.content && onlineArticle.content.trim() !== ''
+					? JSON.parse(onlineArticle.content) // verifying if the online content is not empty and json.parse it
+					: undefined;
 			}
 		} catch (error) {
 			console.error('Error parsing content:', error);
-			return null; // an error occurred, json.parse failed, content is invalid or empty
+			return undefined; // an error occurred, json.parse failed, content is invalid or empty
 		}
 	};
 
 	// function use to check the article.content
 	const getProcessedContent = () => {
-		if (!getArticleContent() && onlineArticle?.rawContent) { // checking if we have a parsable article.content and if we have a rawContent
+		const jsonValue = tryParseContent();
+		if (jsonValue === undefined && onlineArticle?.rawContent) {
+			// checking if we have a parsable article.content and if we have a rawContent
 			try {
 				const editor = createYooptaEditor();
 				return plainText.deserialize(editor, onlineArticle.rawContent); // if so we deserialize the rawContent to be interpreted by the Editor component
 			} catch (error) {
 				console.error('Error deserializing raw content:', error);
-				return null;
+				return undefined;
 			}
 		}
-		return getArticleContent(); // else there is no problem with the actual article.content so we return it
+		return jsonValue; // else there is no problem with the actual article.content so we return it
 	};
 
 	useEffect(() => {
@@ -176,10 +179,7 @@ const ArticlePage = (): JSX.Element => {
 								)}
 							</HStack>
 						</VStack>
-						<Editor
-							value={getProcessedContent()}
-							readOnly={true}
-						/>
+						<Editor value={getProcessedContent()} readOnly={true} />
 						<Text variant="p" whiteSpace="pre-line" textAlign="justify"></Text>
 					</VStack>
 					<VStack align="left" spacing="0px" w="100%">
