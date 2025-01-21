@@ -70,8 +70,6 @@ const WriterArticleCard = ({
 				<VStack spacing="16px" align="start">
 					<HStack w="100%" justify="space-between">
 						<Badge colorScheme="blue">{topic}</Badge>
-						{/* TODO: draft to publication */}
-						{/* TODO: update article */}
 						<Tooltip label="Supprimer définitivement">
 							<Button
 								id="writer-article-card-delete-btn"

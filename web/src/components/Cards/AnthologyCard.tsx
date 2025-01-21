@@ -14,7 +14,6 @@ import {
 	VStack,
 } from '@chakra-ui/react';
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
-import { FaArrowUpRightFromSquare } from 'react-icons/fa6';
 import { FcLike } from 'react-icons/fc';
 
 const AnthologyCard = ({
@@ -41,12 +40,15 @@ const AnthologyCard = ({
 		<Card
 			w="100%"
 			h="100%"
+			cursor="pointer"
 			_hover={{
 				background: colorMode === 'dark' ? 'gray.600' : 'gray.100',
 				'#anthology-card-actions-footer': {
 					visibility: 'visible',
 				},
 			}}
+			onClick={() => navigate(navigateUrl)}
+			zIndex={2}
 		>
 			<CardHeader>
 				<VStack spacing="0px" align="start" w="100%">
@@ -64,16 +66,13 @@ const AnthologyCard = ({
 			</CardBody>
 			<CardFooter>
 				<HStack id="anthology-card-actions-footer" visibility="hidden" spacing="8px">
-					<Tooltip label="Accèder au dossier">
-						<Button onClick={() => navigate(navigateUrl)}>
-							<FaArrowUpRightFromSquare />{' '}
-						</Button>
-					</Tooltip>
 					{deleteAnthology && setAnthologyToUpdate && onOpen && (
 						<>
 							<Tooltip label="Modifier le dossier">
 								<Button
-									onClick={() => {
+									zIndex={3}
+									onClick={(e) => {
+										e.stopPropagation();
 										setAnthologyToUpdate();
 										onOpen();
 									}}
@@ -82,7 +81,13 @@ const AnthologyCard = ({
 								</Button>
 							</Tooltip>
 							<Tooltip label="Supprimer le dossier">
-								<Button onClick={deleteAnthology}>
+								<Button
+									zIndex={3}
+									onClick={(e) => {
+										e.stopPropagation();
+										deleteAnthology();
+									}}
+								>
 									<DeleteIcon />
 								</Button>
 							</Tooltip>
