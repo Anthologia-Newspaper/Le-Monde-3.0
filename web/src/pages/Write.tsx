@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
 	Button,
+	CircularProgress,
 	Menu,
 	MenuButton,
 	MenuItem,
@@ -19,19 +20,21 @@ import { ChevronDownIcon } from '@chakra-ui/icons';
 import { useUIContext } from 'contexts/ui';
 import { Topic } from 'types/topic';
 import Editor from 'components/Editor/Editor';
+import { useOnlineUserContext } from 'contexts/onlineUser';
+import { Article } from 'types/article';
 
 const Write = (): JSX.Element => {
 	const navigate = useNavigate();
 	const ui = useUIContext();
+	const onlineUser = useOnlineUserContext();
 	const toast = useToast();
+	const [draftArticle, setDraftArticle] = useState<Article | undefined>(undefined);
 	const [topics, setTopics] = useState<Topic[]>([]);
 	const [title, setTitle] = useState('');
 	const [topic, setTopic] = useState<Topic | undefined>(undefined);
 	const [content, setContent] = useState({ stringify: '', serialized: '' });
 
-	const uiCreateArticle = async (draft: boolean) => {
-		console.log(content);
-
+	const uiCreateOrUpdateArticle = async (draft: boolean) => {
 		if (title === '') {
 			toast({
 				title: 'Veuillez écrire un titre.',
@@ -53,6 +56,26 @@ const Write = (): JSX.Element => {
 				duration: 9000,
 				isClosable: true,
 			});
+		} else if (onlineUser.extraData.articleToUpdate !== undefined) {
+			console.log('stringify', content.stringify);
+			console.log('serialized', content.serialized);
+			await ui.online.articles.update(
+				{
+					id: onlineUser.extraData.articleToUpdate,
+					newTitle: title,
+					newContent: content.stringify,
+					newRawContent: content.serialized,
+					newTopic: topic.id,
+					newDraft: draft,
+				},
+				(id: number) => {
+					if (!draft) {
+						navigate(`/articles/${id}`);
+					} else {
+						navigate(`/redactions`);
+					}
+				},
+			);
 		} else {
 			await ui.online.articles.create(
 				{
@@ -74,8 +97,27 @@ const Write = (): JSX.Element => {
 	};
 
 	useEffect(() => {
+		if (onlineUser.extraData.articleToUpdate !== undefined) {
+			ui.online.articles.search.oneDraft(onlineUser.extraData.articleToUpdate, setDraftArticle);
+		}
 		ui.online.topics.search.all(setTopics);
 	}, []);
+
+	useEffect(() => {
+		if (onlineUser.extraData.articleToUpdate !== undefined && draftArticle !== undefined) {
+			setTitle(draftArticle.title);
+			setTopic(draftArticle.topic);
+			setContent({ stringify: draftArticle.content, serialized: draftArticle.rawContent });
+		}
+	}, [draftArticle]);
+
+	if (onlineUser.extraData.articleToUpdate !== undefined && content.stringify === '') {
+		return (
+			<VStack w="100%" h="100%" justify="center">
+				<CircularProgress size="120px" isIndeterminate />
+			</VStack>
+		);
+	}
 
 	return (
 		<VStack w="100%" h="100%" spacing="8px">
@@ -109,8 +151,10 @@ const Write = (): JSX.Element => {
 						Sauvegarder
 					</MenuButton>
 					<MenuList>
-						<MenuItem onClick={async () => await uiCreateArticle(false)}>Publier</MenuItem>
-						<MenuItem onClick={async () => await uiCreateArticle(true)}>Enregirster dans les brouillons</MenuItem>
+						<MenuItem onClick={async () => await uiCreateOrUpdateArticle(false)}>Publier</MenuItem>
+						<MenuItem onClick={async () => await uiCreateOrUpdateArticle(true)}>
+							Enregirster dans les brouillons
+						</MenuItem>
 					</MenuList>
 				</Menu>
 			</Stack>
@@ -128,7 +172,7 @@ const Write = (): JSX.Element => {
 				}}
 				onChange={(e) => setTitle(e.target.value)}
 			/>
-			<Editor setValue={setContent} />
+			<Editor setValue={setContent} value={content.stringify !== '' ? JSON.parse(content.stringify) : undefined} />
 		</VStack>
 	);
 };

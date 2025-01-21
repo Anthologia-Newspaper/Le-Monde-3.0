@@ -69,7 +69,13 @@ const Profil = (): JSX.Element => {
 					isError={false}
 					errorMessage=""
 				/>
-				<Button onClick={async () => await ui.online.user.update.password({ oldPassword: password, newPassword })}>
+				<Button
+					onClick={async () => {
+						await ui.online.user.update.password({ oldPassword: password, newPassword });
+						setPassword('');
+						setNewPassword('');
+					}}
+				>
 					Modifier
 				</Button>
 			</VStack>

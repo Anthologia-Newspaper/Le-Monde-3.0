@@ -25,6 +25,7 @@ export type ParamsArticlesUpdate = {
 	newTitle?: string;
 	newSubtitle?: string;
 	newContent?: string;
+	newRawContent?: string;
 	newTopic?: number;
 	newDraft?: boolean;
 };

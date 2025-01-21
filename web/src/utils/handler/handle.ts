@@ -21,7 +21,7 @@ const errorCase = (error: AxiosError<any, any>): Handler<never> => {
 	if (error.code === 'ERR_NETWORK') return noResponse;
 	const errorCode = getErrorCode(error);
 	const errorMessage = getErrorMessage(error);
-	const frenchErrorMessage = translateToFrench(errorMessage) || 'No message from the backend.';
+	const frenchErrorMessage = translateToFrench(errorMessage); // || 'No message from the backend.';
 	const output = findResponse(errorCode, frenchErrorMessage);
 	return output ? { ...output, message: frenchErrorMessage } : unhandledResponse;
 };

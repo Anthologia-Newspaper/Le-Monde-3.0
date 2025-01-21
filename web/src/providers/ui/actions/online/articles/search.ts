@@ -95,7 +95,7 @@ export const oneDraft = async (
 		handleToast({
 			res,
 			settings: {
-				showIfSuccess: true,
+				showIfSuccess: false,
 				showIfNotSuccess: true,
 				showIfAuthError: false,
 			},

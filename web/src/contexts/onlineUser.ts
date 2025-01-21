@@ -21,7 +21,13 @@ import {
 
 type OnlineUserContextType = {
 	data: OnlineUser;
+	extraData: {
+		articleToUpdate: number | undefined;
+	};
 	methods: {
+		extraData: {
+			setArticleToUpdate: (id: number | undefined) => void;
+		};
 		auth: {
 			sign: {
 				up: (params: ParamsAuthSignUp) => Promise<Handler<OnlineUser>>;

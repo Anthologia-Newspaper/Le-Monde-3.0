@@ -28,9 +28,11 @@ import { Article } from 'types/article';
 import { useUIContext } from 'contexts/ui';
 import WriterArticleCard from 'components/Cards/WriterArticleCard';
 import SearchInput from 'components/Inputs/SearchInput';
+import { useOnlineUserContext } from 'contexts/onlineUser';
 
 const Writings = (): JSX.Element => {
 	const ui = useUIContext();
+	const onlineUser = useOnlineUserContext();
 	const navigate = useNavigate();
 	const { colorMode } = useColorMode();
 	const [refresh, setRefresh] = useState(1);
@@ -103,7 +105,13 @@ const Writings = (): JSX.Element => {
 				<Tag>
 					{articles.length} article{articles.length === 1 ? '' : 's'}
 				</Tag>
-				<HStack cursor="pointer" onClick={() => navigate('/ecrire')}>
+				<HStack
+					cursor="pointer"
+					onClick={() => {
+						onlineUser.methods.extraData.setArticleToUpdate(undefined);
+						navigate('/ecrire');
+					}}
+				>
 					<Text variant="info">
 						<u>Ajouter</u>
 					</Text>
@@ -197,7 +205,7 @@ const Writings = (): JSX.Element => {
 				{sortAndFilterArticles(filteredArticles).map((article, index) => (
 					<GridItem key={index.toString()}>
 						<WriterArticleCard
-							navigateUrl={`/articles/${article.id}`}
+							articleId={article.id}
 							title={article.title}
 							date={new Date().toLocaleDateString('fr-FR')}
 							topic={article.topic.name}

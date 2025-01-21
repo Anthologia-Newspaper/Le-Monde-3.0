@@ -20,9 +20,10 @@ import {
 import { FaEye } from 'react-icons/fa';
 import { FcLike } from 'react-icons/fc';
 import { DeleteIcon } from '@chakra-ui/icons';
+import { useOnlineUserContext } from 'contexts/onlineUser';
 
 const WriterArticleCard = ({
-	navigateUrl,
+	articleId,
 	rawContent,
 	date,
 	title,
@@ -32,7 +33,7 @@ const WriterArticleCard = ({
 	isDraft,
 	deleteAction,
 }: {
-	navigateUrl: string;
+	articleId: number;
 	rawContent: string;
 	date: string;
 	likes: number;
@@ -43,6 +44,7 @@ const WriterArticleCard = ({
 	deleteAction: () => Promise<void>;
 }): JSX.Element => {
 	const navigate = useNavigate();
+	const onlineUser = useOnlineUserContext();
 	const { colorMode } = useColorMode();
 
 	return (
@@ -50,7 +52,14 @@ const WriterArticleCard = ({
 			w="100%"
 			h="100%"
 			cursor="pointer"
-			onClick={() => navigate(navigateUrl)}
+			onClick={() => {
+				if (isDraft) {
+					onlineUser.methods.extraData.setArticleToUpdate(articleId);
+					navigate('/ecrire');
+				} else {
+					navigate(`/articles/${articleId}`);
+				}
+			}}
 			zIndex={2}
 			_hover={{
 				background: colorMode === 'dark' ? 'gray.600' : 'gray.100',
@@ -94,9 +103,6 @@ const WriterArticleCard = ({
 						{rawContent}
 					</Text>
 				</VStack>
-				{/* <VStack maxH="80px" overflow="hidden">
-					<Editor value={JSON.parse(content)} readOnly={true} />
-				</VStack> */}
 			</CardBody>
 			<CardFooter>
 				<Flex direction="row" justify="space-between" w="100%">

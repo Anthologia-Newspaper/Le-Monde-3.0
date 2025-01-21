@@ -10,7 +10,7 @@ import {
 	ParamsArticlesCreate,
 	ParamsArticlesLike,
 	ParamsArticlesSearch,
-	// ParamsArticlesUpdate,
+	ParamsArticlesUpdate,
 	ParamsAuthSignIn,
 	ParamsAuthSignUp,
 	ParamsUserUpdatePassword,
@@ -48,6 +48,7 @@ type UIContextType = {
 					errorCallback: () => void,
 				) => Promise<void>;
 			};
+			update: (params: ParamsArticlesUpdate, callback: (id: number) => void) => Promise<void>;
 			like: (params: ParamsArticlesLike, callback: (isLiked: boolean) => void) => Promise<void>;
 			delete: (id: number, callback: () => void) => Promise<void>;
 		};

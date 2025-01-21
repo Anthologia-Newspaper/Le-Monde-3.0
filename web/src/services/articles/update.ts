@@ -7,6 +7,7 @@ const update = async (params: ParamsArticlesUpdate) =>
 		title: params.newTitle,
 		subtitle: params.newSubtitle,
 		content: params.newContent,
+		rawContent: params.newRawContent,
 		topic: params.newTopic,
 		draft: params.newDraft,
 	});

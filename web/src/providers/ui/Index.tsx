@@ -15,6 +15,7 @@ import {
 	ParamsArticlesCreate,
 	ParamsArticlesLike,
 	ParamsArticlesSearch,
+	ParamsArticlesUpdate,
 	ParamsAuthSignIn,
 	ParamsAuthSignUp,
 	ParamsUserUpdatePassword,
@@ -141,6 +142,8 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 							uiContextValue.handleToast,
 						),
 				},
+				update: (params: ParamsArticlesUpdate, callback: (id: number) => void) =>
+					actions.online.articles.update(params, callback, onlineUser, uiContextValue.handleToast),
 				like: (params: ParamsArticlesLike, callback: (isLiked: boolean) => void) =>
 					actions.online.articles.like(params, callback, onlineUser, uiContextValue.handleToast),
 				delete: (id: number, callback: () => void) =>

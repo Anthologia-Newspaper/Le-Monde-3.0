@@ -27,6 +27,8 @@ const UserProvider = ({ children }: { children: JSX.Element }) => {
 		loadFromLocalStorage<OnlineUser>('onlineUser', defaultOnlineUser),
 	);
 
+	const [articleToUpdate, setArticleToUpdate] = useState<number | undefined>(undefined);
+
 	const data = {
 		updateAll: (newData: OnlineUser) => setOnlineUser(newData),
 		updateEmail: (newEmail: string) => setOnlineUser((u) => ({ ...u, email: newEmail })),
@@ -46,7 +48,13 @@ const UserProvider = ({ children }: { children: JSX.Element }) => {
 
 	const OnlineuserContextValue: OnlineUserContextType = {
 		data: onlineUser,
+		extraData: {
+			articleToUpdate,
+		},
 		methods: {
+			extraData: {
+				setArticleToUpdate,
+			},
 			auth: {
 				sign: {
 					up: actions.auth.sign.up,
