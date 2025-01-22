@@ -50,7 +50,8 @@ const Step0 = ({ setActiveStep }: { setActiveStep: (v: number) => void }): JSX.E
 					{/* TODO: use something else than google doc */}
 					Pour plus d'information, lisez notre{' '}
 					<Link
-						href="https://docs.google.com/document/d/11RIsW4aiMNqTvEdjwzu6p3mA6TN_FH0gSYrbj699pds/edit?usp=sharing"
+						// href="https://docs.google.com/document/d/11RIsW4aiMNqTvEdjwzu6p3mA6TN_FH0gSYrbj699pds/edit?usp=sharing"
+						href="https://ipfs.io/ipfs/QmZYd8UjEdJKAj31Uk62yLw98Myw3J53XCVbvz429LMMY3"
 						isExternal
 					>
 						<u>Livre Blanc</u>

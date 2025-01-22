@@ -17,6 +17,7 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 	const toast = useToast();
 	const navigate = useNavigate();
 	const user = useUserContext();
+	const [rootCid, setRootCid] = useState<string>('');
 
 	const defaultOfflineUser: OfflineUser = {
 		config: {
@@ -34,6 +35,20 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 	);
 
 	const [articlesCatalog, setArticlesCatalog] = useState<OfflineArticle[]>([]);
+
+	const getRootCid = async () => {
+		try {
+			const res = await axios.get<string>('https://us-central1-anthologia-428813.cloudfunctions.net/Get-Current-Hash');
+			setRootCid(res.data);
+			console.log('---OK---');
+			console.log(res);
+			console.log('-------');
+		} catch (error) {
+			console.log('---ERROR---');
+			console.error(error);
+			console.log('-------');
+		}
+	};
 
 	useEffect(() => {
 		if (offlineUser) {
@@ -65,6 +80,10 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 		}
 	}, [articlesCatalog]);
 
+	useEffect(() => {
+		getRootCid();
+	}, []);
+
 	const OfflineUserContextValue: OfflineUserContextType = {
 		data: offlineUser,
 		articlesCatalog,
@@ -82,8 +101,7 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 				setStep: (step: number) => setOfflineUser((u) => ({ ...u, config: { ...u.config, step } })),
 				testGateway: async () => {
 					try {
-						const cid = 'QmZRpFJNFUZCwEkjPbuGtaSibvMq7jpfK5f1SBubfNso8Y';
-						const file = await OfflineUserContextValue.methods.ipfs.get<{ articles: OfflineArticle[] }>(cid);
+						const file = await OfflineUserContextValue.methods.ipfs.get<{ articles: OfflineArticle[] }>(rootCid);
 						console.log(file);
 						return file.articles.length > 0;
 					} catch (error) {
@@ -96,10 +114,9 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 				loadCatalog: async () => {
 					// TODO: optimise it (sorting) using decentralized cloud functions
 					try {
-						const cid = 'QmZRpFJNFUZCwEkjPbuGtaSibvMq7jpfK5f1SBubfNso8Y';
 						const file = await OfflineUserContextValue.methods.ipfs.get<{
 							articles: OfflineArticle[];
-						}>(cid);
+						}>(rootCid);
 						console.log(file);
 						setArticlesCatalog(file.articles);
 						return true;
@@ -217,15 +234,16 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 				get: async (cid: string) => {
 					try {
 						console.log(`get IPFS CID: ${cid}`);
-						const res = await axios.get(`${offlineUser.config.gateway}/ipfs/${cid}`, { timeout: 50000 });
+						const res = await axios.get(`${offlineUser.config.gateway}/ipfs/${cid}`, {
+							timeout: 50000,
+							headers: {
+								'Access-Control-Allow-Origin': '*',
+							},
+						});
 						console.log(res);
 						return res.data;
 					} catch (error) {
-						if (
-							error instanceof AxiosError &&
-							error.code === 'ERR_NETWORK' &&
-							cid !== 'QmZRpFJNFUZCwEkjPbuGtaSibvMq7jpfK5f1SBubfNso8Y'
-						) {
+						if (error instanceof AxiosError && error.code === 'ERR_NETWORK' && cid !== rootCid) {
 							setOfflineUser((u) => ({
 								...u,
 								config: {

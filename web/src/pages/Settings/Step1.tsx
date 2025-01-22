@@ -89,7 +89,6 @@ const Step1 = ({ setActiveStep }: { setActiveStep: (v: number) => void }): JSX.E
 					</Text>
 					<InputGroup>
 						<Input
-							variant="primary-1"
 							placeholder="https://ipfs.io"
 							value={offlineUser.data.config.gateway}
 							onChange={(e) => offlineUser.methods.config.setGateway(e.target.value)}
