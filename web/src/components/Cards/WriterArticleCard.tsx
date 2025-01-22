@@ -20,6 +20,8 @@ import {
 import { FaEye } from 'react-icons/fa';
 import { FcLike } from 'react-icons/fc';
 import { DeleteIcon } from '@chakra-ui/icons';
+import readingTime from 'reading-time';
+
 import { useOnlineUserContext } from 'contexts/onlineUser';
 
 const WriterArticleCard = ({
@@ -44,6 +46,7 @@ const WriterArticleCard = ({
 	deleteAction: () => Promise<void>;
 }): JSX.Element => {
 	const navigate = useNavigate();
+	const timeToRead = Math.round(readingTime(rawContent).minutes) + 1;
 	const onlineUser = useOnlineUserContext();
 	const { colorMode } = useColorMode();
 
@@ -120,9 +123,8 @@ const WriterArticleCard = ({
 							</Tag>
 						)}
 					</HStack>
-					{/* TODO: estimitate time to read */}
 					<Badge variant="outline" colorScheme="gray" lineHeight="24px">
-						3 min
+						{`${timeToRead} min`}
 					</Badge>
 				</Flex>
 			</CardFooter>

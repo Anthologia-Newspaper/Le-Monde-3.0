@@ -19,6 +19,7 @@ import {
 } from '@chakra-ui/react';
 import { FaEye, FaFolderMinus, FaFolderPlus } from 'react-icons/fa';
 import { FcLike } from 'react-icons/fc';
+import readingTime from 'reading-time';
 
 const ReaderArticleCard = ({
 	navigateUrl,
@@ -47,6 +48,7 @@ const ReaderArticleCard = ({
 }): JSX.Element => {
 	const navigate = useNavigate();
 	const { colorMode } = useColorMode();
+	const timeToRead = Math.round(readingTime(rawContent).minutes) + 1;
 
 	return (
 		<Card
@@ -144,9 +146,8 @@ const ReaderArticleCard = ({
 							</Tag>
 						)}
 					</HStack>
-					{/* TODO: estimitate time to read */}
 					<Badge variant="outline" colorScheme="gray" lineHeight="24px">
-						3 min
+						{`${timeToRead} min`}
 					</Badge>
 				</Flex>
 			</CardFooter>
