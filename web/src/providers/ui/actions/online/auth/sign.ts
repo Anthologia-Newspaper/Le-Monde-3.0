@@ -47,6 +47,7 @@ export const signIn = async (
 			messages: {
 				200: { message: 'Bonjour ! Connexion à votre compte réussie.' },
 				400: { message: 'Paramètres invalides.' },
+				404: { message: 'Paramètres invalides.' },
 			},
 		});
 		if (res.status === 'success') {

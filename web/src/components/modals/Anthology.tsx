@@ -11,6 +11,7 @@ import {
 	Input,
 	ModalFooter,
 	Button,
+	useToast,
 } from '@chakra-ui/react';
 
 const AnthologyModal = ({
@@ -30,6 +31,7 @@ const AnthologyModal = ({
 }) => {
 	const [newName, setNewName] = useState(name);
 	const [newDescription, setNewDescription] = useState(description);
+	const toast = useToast();
 
 	React.useEffect(() => {
 		setNewName(name);
@@ -63,10 +65,19 @@ const AnthologyModal = ({
 				<ModalFooter>
 					<Button
 						onClick={async () => {
-							await action(newName, newDescription);
-							// TODO: title and description cleared even if action failed
-							setNewName('');
-							setNewDescription('');
+							if (newName.trim() === '') {
+								toast({
+									title: 'Veuillez renseigner un titre.',
+									status: 'error',
+									duration: 5000,
+									isClosable: true,
+								});
+							} else {
+								await action(newName, newDescription);
+								// TODO: title and description cleared even if action failed
+								setNewName('');
+								setNewDescription('');
+							}
 						}}
 					>
 						{type === 'CREATE' ? 'Créer' : 'Modifier'}

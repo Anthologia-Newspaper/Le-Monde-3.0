@@ -18,7 +18,8 @@ import {
 	VStack,
 } from '@chakra-ui/react';
 import { FaEye, FaFolderMinus, FaFolderPlus } from 'react-icons/fa';
-import { FcLike } from 'react-icons/fc';
+import { FcLike, FcLikePlaceholder } from 'react-icons/fc';
+import readingTime from 'reading-time';
 
 const ReaderArticleCard = ({
 	navigateUrl,
@@ -29,8 +30,10 @@ const ReaderArticleCard = ({
 	likes,
 	views,
 	topic,
+	isLiked,
 	addToFolderAction,
 	removeFromFolderAction,
+	addToFavoritesAction,
 	removeFromFavoritesAction,
 }: {
 	navigateUrl: string;
@@ -41,12 +44,15 @@ const ReaderArticleCard = ({
 	views: number;
 	title: string;
 	topic: string;
+	isLiked: boolean;
 	addToFolderAction?: () => Promise<void>;
 	removeFromFolderAction?: () => Promise<void>;
+	addToFavoritesAction?: () => Promise<void>;
 	removeFromFavoritesAction?: () => Promise<void>;
 }): JSX.Element => {
 	const navigate = useNavigate();
 	const { colorMode } = useColorMode();
+	const timeToRead = Math.round(readingTime(rawContent).minutes) + 1;
 
 	return (
 		<Card
@@ -64,8 +70,19 @@ const ReaderArticleCard = ({
 					<HStack w="100%" justify="space-between">
 						<Badge colorScheme="blue">{topic}</Badge>
 						<HStack id="reader-article-card-actions" visibility="hidden" zIndex={3}>
-							{/* TODO: add / remove favorites in all situations */}
-							{removeFromFavoritesAction && (
+							{addToFavoritesAction && !isLiked && (
+								<Tooltip label="Ajouter aux favoris">
+									<Button
+										onClick={async (e) => {
+											e.stopPropagation();
+											await addToFavoritesAction();
+										}}
+									>
+										<FcLikePlaceholder />
+									</Button>
+								</Tooltip>
+							)}
+							{removeFromFavoritesAction && isLiked && (
 								<Tooltip label="Retirer des favoris">
 									<Button
 										onClick={async (e) => {
@@ -122,9 +139,6 @@ const ReaderArticleCard = ({
 						{rawContent}
 					</Text>
 				</VStack>
-				{/* <VStack maxH="80px" overflow="hidden">
-					<Editor value={JSON.parse(content)} readOnly={true} />
-				</VStack> */}
 			</CardBody>
 			<CardFooter>
 				<Flex direction="row" justify="space-between" w="100%">
@@ -144,38 +158,12 @@ const ReaderArticleCard = ({
 							</Tag>
 						)}
 					</HStack>
-					{/* TODO: estimitate time to read */}
 					<Badge variant="outline" colorScheme="gray" lineHeight="24px">
-						3 min
+						{`${timeToRead} min`}
 					</Badge>
 				</Flex>
 			</CardFooter>
 		</Card>
-		// <VStack
-		// 	w="100%"
-		// 	maxW="400px"
-		// 	h="100%"
-		// 	p={{ base: '8px', xl: '16px' }}
-		// 	bg="gray.900"
-		// 	borderRadius="sm"
-		// 	justify="space-between"
-		// 	spacing="16px"
-		// >
-		// 	<VStack w="100%" spacing={{ base: '8px', lg: '16px' }}>
-		// 		<HStack w="100%" alignItems="center" justifyContent="space-between">
-		// 			<Badge colorScheme="blue" borderRadius="xsm">
-		// 				{topic}
-		// 			</Badge>
-		// 			<HStack spacing="8px">
-		// 				{actions.map((action, index) => (
-		// 					<Box cursor="pointer" key={index.toString()}>
-		// 						{action}
-		// 					</Box>
-		// 				))}
-		// 			</HStack>
-		// 		</HStack>
-		// 	</VStack>
-		// </VStack>
 	);
 };
 

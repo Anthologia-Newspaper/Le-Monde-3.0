@@ -124,7 +124,6 @@ const AnthologiesModal = ({
 				onClose={createOnClose}
 				type="CREATE"
 				action={async (name, description) => {
-					// TODO: verify name is not empty
 					await createAnthology(name, description);
 					// TODO: create modal closes even if action failed
 					createOnClose();
