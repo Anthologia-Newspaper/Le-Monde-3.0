@@ -25,22 +25,28 @@ const Explore = (): JSX.Element => {
 
 	// online
 	const [onlineArticles, setOnlineArticles] = useState<Article[]>([]);
+	const [onlineLikedArticles, setOnlineLikedArticles] = useState<Article[]>([]);
 	const [onlineAnthologies, setOnlineAnthologies] = useState<Anthology[]>([]);
 	const [onlineArticleToAdd, setOnlineArticleToAdd] = useState<number | undefined>(undefined);
 
 	// offline
 	const [offlineArticles, setOfflineArticles] = useState<OfflineArticle[]>([]);
+	const [offlineLikedArticles, setOfflineLikedArticles] = useState<OfflineArticle[]>([]);
 	const [offlineAnthologies, setOfflineAnthologies] = useState<OfflineAnthology[]>([]);
 	const [offlineArticleToAdd, setOfflineArticleToAdd] = useState<string | undefined>(undefined);
 
 	useEffect(() => {
 		if (!user.data.isOffline) {
 			ui.online.articles.search.allPublications({ query: search, topic: topic?.id }, setOnlineArticles);
+			ui.online.articles.search.likedPublications({ query: search, topic: topic?.id }, setOnlineLikedArticles);
 			ui.online.anthologies.search.many({ author: 'me' }, setOnlineAnthologies);
 			ui.online.topics.search.all(setTopics);
 		} else {
 			console.log(offlineUser.articlesCatalog);
 			setOfflineArticles(offlineUser.articlesCatalog.filter((a) => (search !== '' ? a.title.includes(search) : true)));
+			setOfflineLikedArticles(
+				offlineUser.data.articles.liked.filter((a) => (search !== '' ? a.title.includes(search) : true)),
+			);
 			setOfflineAnthologies(offlineUser.data.anthologies);
 		}
 	}, [refresh]);
@@ -117,9 +123,16 @@ const Explore = (): JSX.Element => {
 											rawContent={article.rawContent}
 											likes={article.likeCounter}
 											views={article.viewCounter}
+											isLiked={onlineLikedArticles.find((a) => a.id === article.id) !== undefined}
 											addToFolderAction={async () => {
 												setOnlineArticleToAdd(article.id);
 												onOpen();
+											}}
+											addToFavoritesAction={async () => {
+												ui.online.articles.like({ id: article.id, isLiked: false }, () => setRefresh((r) => r + 1));
+											}}
+											removeFromFavoritesAction={async () => {
+												ui.online.articles.like({ id: article.id, isLiked: true }, () => setRefresh((r) => r + 1));
 											}}
 										/>
 									</GridItem>
@@ -135,10 +148,16 @@ const Explore = (): JSX.Element => {
 										rawContent={article.preview}
 										likes={-1}
 										views={-1}
-										// TODO: add / remove favorites
+										isLiked={offlineLikedArticles.find((a) => a.cid === article.cid) !== undefined}
 										addToFolderAction={async () => {
 											setOfflineArticleToAdd(article.cid);
 											onOpen();
+										}}
+										addToFavoritesAction={async () => {
+											ui.offline.articles.like(article.cid, false, () => setRefresh((r) => r + 1));
+										}}
+										removeFromFavoritesAction={async () => {
+											ui.offline.articles.like(article.cid, true, () => setRefresh((r) => r + 1));
 										}}
 									/>
 								</GridItem>

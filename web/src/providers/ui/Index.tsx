@@ -93,7 +93,7 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 					status: res.status,
 					title,
 					description,
-					duration: 9000,
+					duration: 5000,
 					isClosable: true,
 				});
 			}
@@ -189,7 +189,7 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 						toast({
 							status: res ? 'success' : 'error',
 							title: res ? 'Article retiré des favoris.' : 'Une erreur est survenue.',
-							duration: 9000,
+							duration: 5000,
 							isClosable: true,
 						});
 						callback(!isLiked);
@@ -198,7 +198,7 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 						toast({
 							status: res ? 'success' : 'error',
 							title: res ? 'Article ajouté aux favoris !' : 'Une erreur est survenue.',
-							duration: 9000,
+							duration: 5000,
 							isClosable: true,
 						});
 						callback && callback(!isLiked);
@@ -212,7 +212,7 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 							toast({
 								status: 'error',
 								title: 'Article inconnu.',
-								duration: 9000,
+								duration: 5000,
 								isClosable: true,
 							});
 						} else {
@@ -238,7 +238,7 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 						toast({
 							status: 'error',
 							title: 'Dossier inconnu.',
-							duration: 9000,
+							duration: 5000,
 							isClosable: true,
 						});
 					}
@@ -255,7 +255,7 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 					toast({
 						status: res ? 'success' : 'error',
 						title: res ? 'Dossier créé.' : 'Une erreur est survenue.',
-						duration: 9000,
+						duration: 5000,
 						isClosable: true,
 					});
 					if (res) callback();
@@ -265,7 +265,7 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 					toast({
 						status: res ? 'success' : 'error',
 						title: res ? 'Dossier supprimé.' : 'Dossier introuvable.',
-						duration: 9000,
+						duration: 5000,
 						isClosable: true,
 					});
 					callback();
@@ -278,7 +278,7 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 							toast({
 								status: 'error',
 								title: 'Dossier inconnu.',
-								duration: 9000,
+								duration: 5000,
 								isClosable: true,
 							});
 						} else {
@@ -291,7 +291,7 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 					toast({
 						status: res ? 'success' : 'error',
 						title: res ? 'Article ajouté au dossier !' : 'Une erreur est survenue',
-						duration: 9000,
+						duration: 5000,
 						isClosable: true,
 					});
 					if (res) callback();
@@ -301,7 +301,7 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 					toast({
 						status: res ? 'success' : 'error',
 						title: res ? 'Article retiré du dossier !' : 'Une erreur est survenue.',
-						duration: 9000,
+						duration: 5000,
 						isClosable: true,
 					});
 					if (res) callback();
@@ -311,7 +311,7 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 					toast({
 						status: res ? 'success' : 'error',
 						title: res ? 'Dossier modifié !' : 'Une erreur est survenue.',
-						duration: 9000,
+						duration: 5000,
 						isClosable: true,
 					});
 					if (res) callback();

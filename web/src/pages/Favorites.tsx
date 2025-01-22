@@ -94,6 +94,7 @@ const Favorites = (): JSX.Element => {
 										rawContent={article.rawContent}
 										likes={article.likeCounter}
 										views={article.viewCounter}
+										isLiked={true}
 										addToFolderAction={async () => {
 											setOnlineArticleToAdd(article.id);
 											onOpen();
@@ -115,6 +116,7 @@ const Favorites = (): JSX.Element => {
 										rawContent={article.preview}
 										likes={-1}
 										views={-1}
+										isLiked={true}
 										addToFolderAction={async () => {
 											setOfflineArticleToAdd(article.cid);
 											onOpen();

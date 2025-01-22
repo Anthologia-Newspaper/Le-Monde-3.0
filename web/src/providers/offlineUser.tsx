@@ -237,7 +237,7 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 								title: 'Gateway inaccessible.',
 								description: 'Veuillez en renseigner une autre.',
 								status: 'error',
-								duration: 9000,
+								duration: 5000,
 								isClosable: true,
 							});
 							navigate('/reglages');

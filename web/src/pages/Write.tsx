@@ -39,21 +39,21 @@ const Write = (): JSX.Element => {
 			toast({
 				title: 'Veuillez écrire un titre.',
 				status: 'error',
-				duration: 9000,
+				duration: 5000,
 				isClosable: true,
 			});
 		} else if (topic === undefined) {
 			toast({
 				title: 'Veuillez sélectionner un sujet.',
 				status: 'error',
-				duration: 9000,
+				duration: 5000,
 				isClosable: true,
 			});
 		} else if ((draft && content.serialized.length < 2) || (!draft && content.serialized.length < 200)) {
 			toast({
 				title: 'Veuillez écrire un contenu plus long.',
 				status: 'error',
-				duration: 9000,
+				duration: 5000,
 				isClosable: true,
 			});
 		} else if (onlineUser.extraData.articleToUpdate !== undefined) {

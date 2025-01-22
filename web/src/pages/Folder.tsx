@@ -3,33 +3,39 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { CircularProgress, Grid, GridItem, Tag, VStack } from '@chakra-ui/react';
 
-import { useUserContext } from 'contexts/user';
 import { useUIContext } from 'contexts/ui';
+import { useUserContext } from 'contexts/user';
+import { useOfflineUserContext } from 'contexts/offlineUser';
 import { Article, OfflineArticle } from 'types/article';
 import { Anthology, OfflineAnthology } from 'types/anthology';
 import SearchInput from 'components/Inputs/SearchInput';
 import ArticleCard from 'components/Cards/ReaderArticleCard';
 
 const Folder = (): JSX.Element => {
-	const user = useUserContext();
 	const ui = useUIContext();
+	const user = useUserContext();
+	const offlineUser = useOfflineUserContext();
 	const { anthologyId } = useParams();
 	const [search, setSearch] = useState('');
 	const [refresh, setRefresh] = useState(1);
 
 	// online
 	const [onlineArticles, setOnlineArticles] = useState<Article[]>([]);
+	const [onlineLikedArticles, setOnlineLikedArticles] = useState<Article[]>([]);
 	const [onlineAnthology, setOnlineAnthology] = useState<Anthology | undefined>(undefined);
 
 	// offline
 	const [offlineArticles, setOfflineArticles] = useState<OfflineArticle[]>([]);
+	const [offlineLikedArticles, setOfflineLikedArticles] = useState<OfflineArticle[]>([]);
 	const [offlineAnthology, setOfflineAnthology] = useState<OfflineAnthology | undefined>(undefined);
 
 	useEffect(() => {
 		if (!user.data.isOffline) {
 			ui.online.anthologies.search.one(+anthologyId!, setOnlineAnthology);
+			ui.online.articles.search.likedPublications({ anthologyId: +anthologyId! }, setOnlineLikedArticles);
 		} else {
 			ui.offline.anthologies.search.one(anthologyId!, setOfflineAnthology);
+			setOfflineLikedArticles(offlineUser.data.articles.liked);
 		}
 	}, [refresh]);
 
@@ -95,15 +101,21 @@ const Folder = (): JSX.Element => {
 									date={new Date(article.createdAt).toLocaleDateString('fr-FR')}
 									topic={article.topic.name}
 									rawContent={article.rawContent}
-									// TODO: add / remove favorites
 									// TODO: add article to other anthology
 									likes={article.likeCounter}
 									views={article.viewCounter}
+									isLiked={onlineLikedArticles.find((a) => a.id === article.id) !== undefined}
 									removeFromFolderAction={async () =>
 										await ui.online.anthologies.removeArticle(+anthologyId!, article.id, async () =>
 											setRefresh((r) => r + 1),
 										)
 									}
+									addToFavoritesAction={async () => {
+										ui.online.articles.like({ id: article.id, isLiked: false }, () => setRefresh((r) => r + 1));
+									}}
+									removeFromFavoritesAction={async () => {
+										ui.online.articles.like({ id: article.id, isLiked: true }, () => setRefresh((r) => r + 1));
+									}}
 								/>
 							</GridItem>
 					  ))
@@ -116,15 +128,21 @@ const Folder = (): JSX.Element => {
 									date={new Date(article.createdAt).toLocaleDateString('fr-FR')}
 									topic={article.topic}
 									rawContent={article.preview}
-									// TODO: add / remove article to favorites
 									// TODO: add article to other anthology
 									likes={-1}
 									views={-1}
+									isLiked={offlineLikedArticles.find((a) => a.cid === article.cid) !== undefined}
 									removeFromFolderAction={async () =>
 										ui.offline.anthologies.removeArticle(anthologyId!, article.cid, async () =>
 											setRefresh((r) => r + 1),
 										)
 									}
+									addToFavoritesAction={async () => {
+										ui.offline.articles.like(article.cid, false, () => setRefresh((r) => r + 1));
+									}}
+									removeFromFavoritesAction={async () => {
+										ui.offline.articles.like(article.cid, true, () => setRefresh((r) => r + 1));
+									}}
 								/>
 							</GridItem>
 					  ))}
