@@ -19,7 +19,7 @@ const like = async (
 			},
 			messages: {
 				200: {
-					message: !params.isLiked ? 'Article ajouté aux favoris.' : 'Article supprimé des favoris.',
+					message: !params.isLiked ? 'Article ajouté à vos favoris.' : 'Article supprimé de vos favoris.',
 				},
 			},
 		});
