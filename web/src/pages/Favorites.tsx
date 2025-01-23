@@ -96,6 +96,7 @@ const Favorites = (): JSX.Element => {
 			setOfflineTopics(
 				offlineUser.articlesCatalog
 					.map((a) => a.topic)
+					.filter((value, index, array) => array.indexOf(value) === index)
 					.filter((t) => offlineUser.data.articles.liked.find((a) => a.topic === t) !== undefined),
 			);
 		}

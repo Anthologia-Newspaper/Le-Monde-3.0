@@ -46,6 +46,7 @@ const Folder = (): JSX.Element => {
 	const [onlineTopic, setOnlineTopic] = useState<Topic | undefined>();
 	const [onlineArticles, setOnlineArticles] = useState<Article[]>([]);
 	const [onlineLikedArticles, setOnlineLikedArticles] = useState<Article[]>([]);
+	const [onlineAnthologyArticles, setOnlineAnthologyArticles] = useState<Article[]>([]);
 	const [onlineAnthology, setOnlineAnthology] = useState<Anthology | undefined>(undefined);
 	const [onlineAnthologies, setOnlineAnthologies] = useState<Anthology[]>([]);
 	const [onlineArticleToAdd, setOnlineArticleToAdd] = useState<number | undefined>(undefined);
@@ -89,17 +90,9 @@ const Folder = (): JSX.Element => {
 		if (!user.data.isOffline) {
 			ui.online.anthologies.search.one(+anthologyId!, (anthology: Anthology) => {
 				setOnlineAnthology(anthology);
-				ui.online.articles.search.allPublications({ anthologyId: anthology.id }, setOnlineArticles);
+				ui.online.articles.search.allPublications({ anthologyId: anthology.id }, setOnlineAnthologyArticles);
 			});
-			ui.online.articles.search.likedPublications({ query: search, topic: onlineTopic?.id }, (articles: Article[]) => {
-				setOnlineLikedArticles(articles);
-				const topicsIds = articles
-					.map((a) => a.topic.id)
-					.filter((value, index, array) => array.indexOf(value) === index);
-				ui.online.topics.search.all((allTopics: Topic[]) =>
-					setOnlineTopics(topicsIds.map((id) => allTopics.find((t) => t.id === id)!)),
-				);
-			});
+			ui.online.articles.search.likedPublications({ query: search, topic: onlineTopic?.id }, setOnlineLikedArticles);
 			ui.online.anthologies.search.many({ author: 'me' }, setOnlineAnthologies);
 		} else {
 			setOfflineAnthologies(offlineUser.data.anthologies);
@@ -112,18 +105,36 @@ const Folder = (): JSX.Element => {
 	}, [refresh]);
 
 	useEffect(() => {
-		setOfflineTopics(
-			offlineUser.articlesCatalog
-				.map((a) => a.topic)
-				.filter((t) => offlineAnthologyArticles.find((a) => a.topic === t) !== undefined),
-		);
-		setOfflineArticles(filterOfflineArticles());
-	}, [offlineAnthologyArticles]);
+		if (!user.data.isOffline) {
+			const topicsIds = onlineAnthologyArticles
+				.map((a) => a.topic.id)
+				.filter((value, index, array) => array.indexOf(value) === index);
+			ui.online.topics.search.all((allTopics: Topic[]) =>
+				setOnlineTopics(topicsIds.map((id) => allTopics.find((t) => t.id === id)!)),
+			);
+			ui.online.articles.search.allPublications(
+				{ query: search, topic: onlineTopic?.id, anthologyId: +anthologyId! },
+				setOnlineArticles,
+			);
+		} else {
+			setOfflineTopics(
+				offlineUser.articlesCatalog
+					.map((a) => a.topic)
+					.filter((value, index, array) => array.indexOf(value) === index)
+					.filter((t) => offlineAnthologyArticles.find((a) => a.topic === t) !== undefined),
+			);
+			setOfflineArticles(filterOfflineArticles());
+		}
+	}, [offlineAnthologyArticles, onlineAnthologyArticles]);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			if (!user.data.isOffline) {
 				ui.online.articles.search.likedPublications({ query: search, topic: onlineTopic?.id }, setOnlineLikedArticles);
+				ui.online.articles.search.allPublications(
+					{ query: search, topic: onlineTopic?.id, anthologyId: +anthologyId! },
+					setOnlineArticles,
+				);
 			} else {
 				if (offlineAnthology !== undefined) setOfflineArticles(filterOfflineArticles());
 			}

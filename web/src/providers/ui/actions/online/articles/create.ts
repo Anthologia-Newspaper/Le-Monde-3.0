@@ -18,7 +18,7 @@ const create = async (
 				showIfAuthError: false,
 			},
 			messages: {
-				201: { message: 'Article créé.' },
+				201: { message: res.data?.draft ? 'Brouillon sauvegardé.' : 'Article publié.' },
 			},
 		});
 		if (res.status === 'success') {
