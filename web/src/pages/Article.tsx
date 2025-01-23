@@ -135,8 +135,14 @@ const ArticlePage = (): JSX.Element => {
 											cursor="pointer"
 											onClick={async () =>
 												!user.data.isOffline
-													? await ui.online.articles.like({ id: +articleId!, isLiked }, setIsLiked)
-													: ui.offline.articles.like(articleId!, isLiked, setIsLiked)
+													? await ui.online.articles.like({ id: +articleId!, isLiked }, (value: boolean) => {
+															setIsLiked(value);
+															setRefresh((r) => r + 1);
+													  })
+													: ui.offline.articles.like(articleId!, isLiked, (value: boolean) => {
+															setIsLiked(value);
+															setRefresh((r) => r + 1);
+													  })
 											}
 											size="24px"
 										/>
@@ -148,8 +154,14 @@ const ArticlePage = (): JSX.Element => {
 										<FcLikePlaceholder
 											onClick={async () =>
 												!user.data.isOffline
-													? await ui.online.articles.like({ id: +articleId!, isLiked }, setIsLiked)
-													: ui.offline.articles.like(articleId!, isLiked, setIsLiked)
+													? await ui.online.articles.like({ id: +articleId!, isLiked }, (value: boolean) => {
+															setIsLiked(value);
+															setRefresh((r) => r + 1);
+													  })
+													: ui.offline.articles.like(articleId!, isLiked, (value: boolean) => {
+															setIsLiked(value);
+															setRefresh((r) => r + 1);
+													  })
 											}
 											size="24px"
 										/>
