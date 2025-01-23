@@ -38,7 +38,7 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 
 	const getRootCid = async () => {
 		try {
-			const res = await axios.get<string>('https://us-central1-anthologia-428813.cloudfunctions.net/Get-Current-Hash');
+			const res = await axios.get<string>('https://fetchcid-antweeenes-projects.vercel.app/');
 			setRootCid(res.data);
 			console.log('---OK---');
 			console.log(res);
