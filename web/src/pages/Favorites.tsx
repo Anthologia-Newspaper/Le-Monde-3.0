@@ -42,25 +42,25 @@ const Favorites = (): JSX.Element => {
 	// online
 	const [onlineTopics, setOnlineTopics] = useState<Topic[]>([]);
 	const [onlineTopic, setOnlineTopic] = useState<Topic | undefined>();
-	const [onlineLikedArticles, setOnlineLikedArticles] = useState<Article[]>([]);
+	const [onlineArticles, setOnlineArticles] = useState<Article[]>([]);
 	const [onlineAnthologies, setOnlineAnthologies] = useState<Anthology[]>([]);
 	const [onlineArticleToAdd, setOnlineArticleToAdd] = useState<number | undefined>(undefined);
 
 	// offline
 	const [offlineTopics, setOfflineTopics] = useState<string[]>([]);
 	const [offlineTopic, setOfflineTopic] = useState<string>('');
-	const [offlineLikedArticles, setOfflineLikedArticles] = useState<OfflineArticle[]>([]);
+	const [offlineArticles, setOfflineArticles] = useState<OfflineArticle[]>([]);
 	const [offlineAnthologies, setOfflineAnthologies] = useState<OfflineAnthology[]>([]);
 	const [offlineArticleToAdd, setOfflineArticleToAdd] = useState<string | undefined>(undefined);
 
 	// TODO: filter in UI context ?
 	const filterOfflineArticles = () => {
-		return offlineUser.articlesCatalog.filter((a) => {
+		return offlineUser.data.articles.liked.filter((a) => {
 			if (search !== '') {
 				if (offlineTopic !== '') {
-					return a.title.includes(search) && a.topic === offlineTopic;
+					return a.title.toLowerCase().includes(search) && a.topic === offlineTopic;
 				}
-				return a.title.includes(search);
+				return a.title.toLowerCase().includes(search);
 			} else if (offlineTopic !== '') {
 				return a.topic === offlineTopic;
 			}
@@ -81,7 +81,7 @@ const Favorites = (): JSX.Element => {
 	useEffect(() => {
 		if (!user.data.isOffline) {
 			ui.online.articles.search.likedPublications({ query: search, topic: onlineTopic?.id }, (articles: Article[]) => {
-				setOnlineLikedArticles(articles);
+				setOnlineArticles(articles);
 				const topicsIds = articles
 					.map((a) => a.topic.id)
 					.filter((value, index, array) => array.indexOf(value) === index);
@@ -91,12 +91,12 @@ const Favorites = (): JSX.Element => {
 			});
 			ui.online.anthologies.search.many({ author: 'me' }, setOnlineAnthologies);
 		} else {
-			setOfflineLikedArticles(filterOfflineArticles);
+			setOfflineArticles(filterOfflineArticles);
 			setOfflineAnthologies(offlineUser.data.anthologies);
 			setOfflineTopics(
 				offlineUser.articlesCatalog
 					.map((a) => a.topic)
-					.filter((t) => offlineLikedArticles.find((a) => a.topic === t) !== undefined),
+					.filter((t) => offlineUser.data.articles.liked.find((a) => a.topic === t) !== undefined),
 			);
 		}
 	}, [refresh]);
@@ -104,9 +104,9 @@ const Favorites = (): JSX.Element => {
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			if (!user.data.isOffline) {
-				ui.online.articles.search.likedPublications({ query: search, topic: onlineTopic?.id }, setOnlineLikedArticles);
+				ui.online.articles.search.likedPublications({ query: search, topic: onlineTopic?.id }, setOnlineArticles);
 			} else {
-				setOfflineLikedArticles(filterOfflineArticles());
+				setOfflineArticles(filterOfflineArticles());
 			}
 		}, 0.7 * 1000);
 		return () => {
@@ -114,7 +114,7 @@ const Favorites = (): JSX.Element => {
 		};
 	}, [search, onlineTopic, offlineTopic]);
 
-	if (!user.data.isOffline ? !onlineLikedArticles : !offlineLikedArticles) {
+	if (!user.data.isOffline ? !onlineArticles : !offlineArticles) {
 		return (
 			<VStack w="100%" h="100%" justify="center">
 				<CircularProgress size="120px" isIndeterminate />
@@ -157,8 +157,8 @@ const Favorites = (): JSX.Element => {
 				<HStack>
 					<Tag>
 						{!user.data.isOffline
-							? `${onlineLikedArticles.length} article${onlineLikedArticles.length === 1 ? '' : 's'}`
-							: `${offlineLikedArticles.length} article${offlineLikedArticles.length === 1 ? '' : 's'}`}
+							? `${onlineArticles.length} article${onlineArticles.length === 1 ? '' : 's'}`
+							: `${offlineArticles.length} article${offlineArticles.length === 1 ? '' : 's'}`}
 					</Tag>
 					{!user.data.isOffline && (
 						<>
@@ -203,7 +203,7 @@ const Favorites = (): JSX.Element => {
 				</HStack>
 				<Grid templateColumns="repeat(auto-fill, minmax(280px, 1fr))" gap={4} w="100%">
 					{!user.data.isOffline
-						? filterArticles(onlineLikedArticles).map((article, index) => (
+						? filterArticles(onlineArticles).map((article, index) => (
 								<GridItem key={index.toString()}>
 									<ArticleCard
 										navigateUrl={`/articles/${article.id}`}
@@ -225,7 +225,7 @@ const Favorites = (): JSX.Element => {
 									/>
 								</GridItem>
 						  ))
-						: offlineLikedArticles.map((article, index) => (
+						: offlineArticles.map((article, index) => (
 								<GridItem key={index.toString()}>
 									<ArticleCard
 										navigateUrl={`/articles/${article.cid}`}

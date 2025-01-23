@@ -75,7 +75,10 @@ type UIContextType = {
 			search: {
 				one: (cid: string, callback: (article: OfflineArticle) => void) => void;
 			};
-			getContent: (cid: string, callback: (content: string) => void) => Promise<void>;
+			getContent: (
+				cid: string,
+				callback: ({ content, rawContent }: { content: string; rawContent: string }) => void,
+			) => Promise<void>;
 		};
 		anthologies: {
 			articles: (id: string, callback: (articles: OfflineArticle[]) => void) => void;

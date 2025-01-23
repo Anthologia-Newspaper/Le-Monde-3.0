@@ -69,7 +69,7 @@ const AnthologyModal = ({
 								toast({
 									title: 'Veuillez renseigner un titre.',
 									status: 'error',
-									duration: 5000,
+									duration: 3000,
 									isClosable: true,
 								});
 							} else {

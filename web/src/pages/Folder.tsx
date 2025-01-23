@@ -55,18 +55,19 @@ const Folder = (): JSX.Element => {
 	const [offlineTopic, setOfflineTopic] = useState<string>('');
 	const [offlineArticles, setOfflineArticles] = useState<OfflineArticle[]>([]);
 	const [offlineLikedArticles, setOfflineLikedArticles] = useState<OfflineArticle[]>([]);
+	const [offlineAnthologyArticles, setOfflineAnthologyArticles] = useState<OfflineArticle[]>([]);
 	const [offlineAnthology, setOfflineAnthology] = useState<OfflineAnthology | undefined>(undefined);
 	const [offlineAnthologies, setOfflineAnthologies] = useState<OfflineAnthology[]>([]);
 	const [offlineArticleToAdd, setOfflineArticleToAdd] = useState<string | undefined>(undefined);
 
 	// TODO: filter in UI context ?
 	const filterOfflineArticles = () => {
-		return offlineUser.articlesCatalog.filter((a) => {
+		return offlineAnthologyArticles.filter((a) => {
 			if (search !== '') {
 				if (offlineTopic !== '') {
-					return a.title.includes(search) && a.topic === offlineTopic;
+					return a.title.toLowerCase().includes(search) && a.topic === offlineTopic;
 				}
-				return a.title.includes(search);
+				return a.title.toLowerCase().includes(search);
 			} else if (offlineTopic !== '') {
 				return a.topic === offlineTopic;
 			}
@@ -104,33 +105,27 @@ const Folder = (): JSX.Element => {
 			setOfflineAnthologies(offlineUser.data.anthologies);
 			ui.offline.anthologies.search.one(anthologyId!, (anthology: OfflineAnthology) => {
 				setOfflineAnthology(anthology);
-				ui.offline.anthologies.articles(anthologyId!, setOfflineArticles);
+				ui.offline.anthologies.articles(anthologyId!, setOfflineAnthologyArticles);
 			});
-			setOfflineLikedArticles(filterOfflineArticles);
-			setOfflineTopics(
-				offlineUser.articlesCatalog
-					.map((a) => a.topic)
-					.filter((t) => offlineLikedArticles.find((a) => a.topic === t) !== undefined),
-			);
+			setOfflineLikedArticles(offlineUser.data.articles.liked);
 		}
 	}, [refresh]);
 
-	// useEffect(() => {
-	// 	if (!user.data.isOffline && onlineAnthology) {
-	// 		ui.online.articles.search.allPublications({ anthologyId: onlineAnthology.id }, setOnlineArticles);
-	// 	}
-	// }, [onlineAnthology]);
-
-	// useEffect(() => {
-	// 	if (user.data.isOffline && offlineAnthology) ui.offline.anthologies.articles(anthologyId!, setOfflineArticles);
-	// }, [offlineAnthology]);
+	useEffect(() => {
+		setOfflineTopics(
+			offlineUser.articlesCatalog
+				.map((a) => a.topic)
+				.filter((t) => offlineAnthologyArticles.find((a) => a.topic === t) !== undefined),
+		);
+		setOfflineArticles(filterOfflineArticles());
+	}, [offlineAnthologyArticles]);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			if (!user.data.isOffline) {
 				ui.online.articles.search.likedPublications({ query: search, topic: onlineTopic?.id }, setOnlineLikedArticles);
 			} else {
-				setOfflineLikedArticles(filterOfflineArticles());
+				if (offlineAnthology !== undefined) setOfflineArticles(filterOfflineArticles());
 			}
 		}, 0.7 * 1000);
 		return () => {

@@ -34,7 +34,7 @@ const Step3 = ({ setActiveStep }: { setActiveStep: (v: number) => void }): JSX.E
 					toast({
 						status: 'success',
 						title: 'Profil chargé !',
-						duration: 5000,
+						duration: 3000,
 						isClosable: true,
 					});
 				} catch (error) {
@@ -43,7 +43,7 @@ const Step3 = ({ setActiveStep }: { setActiveStep: (v: number) => void }): JSX.E
 						status: 'error',
 						title: 'Fichier non valide.',
 						description: 'Syntaxe non conforme.',
-						duration: 5000,
+						duration: 3000,
 						isClosable: true,
 					});
 				}
@@ -93,7 +93,7 @@ const Step3 = ({ setActiveStep }: { setActiveStep: (v: number) => void }): JSX.E
 									toast({
 										title: 'Veuillez rafraîchir les articles.',
 										status: 'warning',
-										duration: 5000,
+										duration: 3000,
 										isClosable: true,
 									});
 									setActiveStep(2);

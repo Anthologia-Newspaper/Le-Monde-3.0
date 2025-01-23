@@ -40,13 +40,9 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 		try {
 			const res = await axios.get<string>('https://fetchcid-antweeenes-projects.vercel.app/');
 			setRootCid(res.data);
-			console.log('---OK---');
 			console.log(res);
-			console.log('-------');
 		} catch (error) {
-			console.log('---ERROR---');
 			console.error(error);
-			console.log('-------');
 		}
 	};
 
@@ -73,7 +69,7 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 			toast({
 				title: 'Veuillez rafraîchir les articles.',
 				status: 'warning',
-				duration: 5000,
+				duration: 3000,
 				isClosable: true,
 			});
 			navigate('/reglages');
@@ -199,7 +195,6 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 					}));
 					return true;
 				},
-				// TODO: return error when article already in anthology
 				addArticle: (params: OfflineAnthologyArticle): boolean => {
 					const anthology = offlineUser.anthologies.find((a) => a.id === params.id);
 					if (!anthology) return false;
@@ -236,9 +231,6 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 						console.log(`get IPFS CID: ${cid}`);
 						const res = await axios.get(`${offlineUser.config.gateway}/ipfs/${cid}`, {
 							timeout: 50000,
-							headers: {
-								'Access-Control-Allow-Origin': '*',
-							},
 						});
 						console.log(res);
 						return res.data;
@@ -255,7 +247,7 @@ const OfflineUserProvider = ({ children }: { children: JSX.Element }) => {
 								title: 'Gateway inaccessible.',
 								description: 'Veuillez en renseigner une autre.',
 								status: 'error',
-								duration: 5000,
+								duration: 3000,
 								isClosable: true,
 							});
 							navigate('/reglages');

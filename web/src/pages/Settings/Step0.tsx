@@ -47,7 +47,6 @@ const Step0 = ({ setActiveStep }: { setActiveStep: (v: number) => void }): JSX.E
 					publiés. Cependant, vous ne pouvez pas encore écrire d'article.
 				</Text>
 				<Text variant="link" textAlign="justify">
-					{/* TODO: use something else than google doc */}
 					Pour plus d'information, lisez notre{' '}
 					<Link
 						// href="https://docs.google.com/document/d/11RIsW4aiMNqTvEdjwzu6p3mA6TN_FH0gSYrbj699pds/edit?usp=sharing"

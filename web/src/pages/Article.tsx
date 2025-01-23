@@ -26,6 +26,7 @@ const ArticlePage = (): JSX.Element => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [isLiked, setIsLiked] = useState(false);
 	const [refresh, setRefresh] = useState(1);
+	const [content, setContent] = useState<YooptaContentValue | undefined>(undefined);
 
 	// online
 	const [onlineArticle, setOnlineArticle] = useState<Article | undefined>(undefined);
@@ -34,46 +35,51 @@ const ArticlePage = (): JSX.Element => {
 
 	// offline
 	const [offlineArticle, setOfflineArticle] = useState<OfflineArticle | undefined>(undefined);
-	const [offlineContent, setOfflineContent] = useState('');
+	const [offlineContent, setOfflineContent] = useState<{ content: string; rawContent: string }>({
+		content: '',
+		rawContent: '',
+	});
 	const [offlineAnthologies, setOfflineAnthologies] = useState<OfflineAnthology[]>([]);
 	const [offlineLikedArticles, setOfflineLikedArticles] = useState<OfflineArticle[]>([]);
 
-	const tryParseContent = (): YooptaContentValue | undefined => {
+	const tryParseRawContent = (): YooptaContentValue | undefined => {
 		try {
-			if (user.data.isOffline) {
-				//checking if we are online
-				return offlineContent && offlineContent.trim() !== ''
-					? JSON.parse(offlineContent) // verifying if the offline content is not empty and json.parse it
+			if (!user.data.isOffline) {
+				return onlineArticle?.content && onlineArticle.content.trim() !== ''
+					? JSON.parse(onlineArticle.content)
 					: undefined;
 			} else {
-				return onlineArticle?.content && onlineArticle.content.trim() !== ''
-					? JSON.parse(onlineArticle.content) // verifying if the online content is not empty and json.parse it
-					: undefined;
+				return offlineContent.content.trim() !== '' ? JSON.parse(offlineContent.content) : undefined;
 			}
 		} catch (error) {
 			console.error('Error parsing content:', error);
-			return undefined; // an error occurred, json.parse failed, content is invalid or empty
+			return undefined;
 		}
 	};
 
-	// function use to check the article.content
 	const getProcessedContent = () => {
-		const jsonValue = tryParseContent();
-		if (jsonValue === undefined && onlineArticle?.rawContent) {
-			// checking if we have a parsable article.content and if we have a rawContent
+		const jsonValue = tryParseRawContent();
+		if (!user.data.isOffline && jsonValue === undefined && onlineArticle?.rawContent) {
 			try {
 				const editor = createYooptaEditor();
-				return plainText.deserialize(editor, onlineArticle.rawContent); // if so we deserialize the rawContent to be interpreted by the Editor component
+				return plainText.deserialize(editor, onlineArticle.rawContent);
+			} catch (error) {
+				console.error('Error deserializing raw content:', error);
+				return undefined;
+			}
+		} else if (user.data.isOffline && jsonValue === undefined && offlineContent.rawContent.trim() !== '') {
+			try {
+				const editor = createYooptaEditor();
+				return plainText.deserialize(editor, offlineContent.rawContent);
 			} catch (error) {
 				console.error('Error deserializing raw content:', error);
 				return undefined;
 			}
 		}
-		return jsonValue; // else there is no problem with the actual article.content so we return it
+		return jsonValue;
 	};
 
 	useEffect(() => {
-		getProcessedContent();
 		if (!user.data.isOffline) {
 			ui.online.articles.search.likedPublications({}, setOnlineLikedArticles);
 			ui.online.anthologies.search.many({ author: 'me' }, setOnlineAnthologies);
@@ -96,13 +102,18 @@ const ArticlePage = (): JSX.Element => {
 		}
 	}, [onlineArticle, offlineArticle]);
 
+	useEffect(() => {
+		setContent(getProcessedContent());
+	}, [onlineArticle, offlineContent]);
+
 	if (
-		!user.data.isOffline
+		(!user.data.isOffline
 			? !onlineArticle
 			: !offlineArticle ||
 			  !offlineContent ||
 			  offlineUser.articlesCatalog.length === 0 ||
-			  offlineUser.articlesCatalog[0] === undefined
+			  offlineUser.articlesCatalog[0] === undefined) ||
+		content === undefined
 	) {
 		return (
 			<VStack w="100%" h="100%" justify="center">
@@ -179,7 +190,7 @@ const ArticlePage = (): JSX.Element => {
 								)}
 							</HStack>
 						</VStack>
-						<Editor value={getProcessedContent()} readOnly={true} />
+						<Editor value={content} readOnly={true} />
 						<Text variant="p" whiteSpace="pre-line" textAlign="justify"></Text>
 					</VStack>
 					<VStack align="left" spacing="0px" w="100%">

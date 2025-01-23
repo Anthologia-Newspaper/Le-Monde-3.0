@@ -93,7 +93,7 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 					status: res.status,
 					title,
 					description,
-					duration: 5000,
+					duration: 3000,
 					isClosable: true,
 				});
 			}
@@ -188,8 +188,8 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 						const res = offlineUser.methods.articles.unlike(cid);
 						toast({
 							status: res ? 'success' : 'error',
-							title: res ? 'Article retiré des favoris.' : 'Une erreur est survenue.',
-							duration: 5000,
+							title: res ? 'Article retiré des favoris.' : "Impossible d'enlever l'article de vos favoris.",
+							duration: 3000,
 							isClosable: true,
 						});
 						callback(!isLiked);
@@ -197,8 +197,8 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 						const res = offlineUser.methods.articles.like(cid);
 						toast({
 							status: res ? 'success' : 'error',
-							title: res ? 'Article ajouté aux favoris !' : 'Une erreur est survenue.',
-							duration: 5000,
+							title: res ? 'Article ajouté aux favoris !' : "Impossible d'ajouter l'article à vos favoris.",
+							duration: 3000,
 							isClosable: true,
 						});
 						callback && callback(!isLiked);
@@ -212,7 +212,7 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 							toast({
 								status: 'error',
 								title: 'Article inconnu.',
-								duration: 5000,
+								duration: 3000,
 								isClosable: true,
 							});
 						} else {
@@ -220,11 +220,19 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 						}
 					},
 				},
-				getContent: async (cid: string, callback: (content: string) => void) => {
+				getContent: async (
+					cid: string,
+					callback: ({ content, rawContent }: { content: string; rawContent: string }) => void,
+				) => {
 					try {
-						const file = await offlineUser.methods.ipfs.get<{ id: string; subtitle: string; content: string }>(cid);
+						const file = await offlineUser.methods.ipfs.get<{
+							id: string;
+							subtitle: string;
+							content: string;
+							rawContent: string;
+						}>(cid);
 						console.log(file);
-						callback(file.content);
+						callback({ content: file.content, rawContent: file.rawContent });
 					} catch (error) {
 						console.error(error);
 					}
@@ -238,7 +246,7 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 						toast({
 							status: 'error',
 							title: 'Dossier inconnu.',
-							duration: 5000,
+							duration: 3000,
 							isClosable: true,
 						});
 					}
@@ -255,7 +263,7 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 					toast({
 						status: res ? 'success' : 'error',
 						title: res ? 'Dossier créé.' : 'Une erreur est survenue.',
-						duration: 5000,
+						duration: 3000,
 						isClosable: true,
 					});
 					if (res) callback();
@@ -265,7 +273,7 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 					toast({
 						status: res ? 'success' : 'error',
 						title: res ? 'Dossier supprimé.' : 'Dossier introuvable.',
-						duration: 5000,
+						duration: 3000,
 						isClosable: true,
 					});
 					callback();
@@ -278,7 +286,7 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 							toast({
 								status: 'error',
 								title: 'Dossier inconnu.',
-								duration: 5000,
+								duration: 3000,
 								isClosable: true,
 							});
 						} else {
@@ -287,21 +295,32 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 					},
 				},
 				addArticle: (id: string, cid: string, callback: () => void) => {
-					const res = offlineUser.methods.anthologies.addArticle({ id, cid });
-					toast({
-						status: res ? 'success' : 'error',
-						title: res ? 'Article ajouté au dossier !' : 'Une erreur est survenue',
-						duration: 5000,
-						isClosable: true,
-					});
-					if (res) callback();
+					// TODO: change, ugly
+					if (offlineUser.data.anthologies.find((a) => a.id === id)?.articles.find((a) => a === cid) !== undefined) {
+						toast({
+							status: 'info',
+							title: 'Cet article est déjà dans ce dossier.',
+							duration: 3000,
+							isClosable: true,
+						});
+						callback();
+					} else {
+						const res = offlineUser.methods.anthologies.addArticle({ id, cid });
+						toast({
+							status: res ? 'success' : 'error',
+							title: res ? 'Article ajouté au dossier !' : 'Une erreur est survenue',
+							duration: 3000,
+							isClosable: true,
+						});
+						if (res) callback();
+					}
 				},
 				removeArticle: (id: string, cid: string, callback: () => void) => {
 					const res = offlineUser.methods.anthologies.removeArticle({ cid, id });
 					toast({
 						status: res ? 'success' : 'error',
 						title: res ? 'Article retiré du dossier !' : 'Une erreur est survenue.',
-						duration: 5000,
+						duration: 3000,
 						isClosable: true,
 					});
 					if (res) callback();
@@ -311,7 +330,7 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 					toast({
 						status: res ? 'success' : 'error',
 						title: res ? 'Dossier modifié !' : 'Une erreur est survenue.',
-						duration: 5000,
+						duration: 3000,
 						isClosable: true,
 					});
 					if (res) callback();
