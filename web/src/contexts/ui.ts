@@ -73,14 +73,14 @@ type UIContextType = {
 			articles: {
 				search: {
 					one: (id: number, callback: (ArticleStatistics: Stats) => void) => Promise<void>;
-				}
+				};
 			};
 			users: {
 				search: {
 					one: (id: number, callback: (UserStatistics: Stats) => void) => Promise<void>;
-				}
-			}
-		}
+				};
+			};
+		};
 	};
 	offline: {
 		articles: {

@@ -1,7 +1,17 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Badge, CircularProgress, Collapse, Grid, HStack, Text, Tooltip, useDisclosure, VStack } from '@chakra-ui/react';
+import {
+	Badge,
+	CircularProgress,
+	Collapse,
+	Grid,
+	HStack,
+	Text,
+	Tooltip,
+	useDisclosure,
+	VStack,
+} from '@chakra-ui/react';
 import { FcLikePlaceholder } from 'react-icons/fc';
 import { FaFolderPlus } from 'react-icons/fa';
 import { FcLike } from 'react-icons/fc';
@@ -18,7 +28,6 @@ import AnthologiesModal from 'components/modals/Anthologies';
 import Editor from 'components/Editor/Editor';
 import Chart from 'components/Chart/Chart';
 import { Stats } from 'types/statistics';
-import { OnlineUser } from 'types/user';
 import { useOnlineUserContext } from 'contexts/onlineUser';
 
 const ArticlePage = (): JSX.Element => {
@@ -232,20 +241,22 @@ const ArticlePage = (): JSX.Element => {
 							w="100%"
 						>
 							<Collapse in={isLikeChartDisplayed} animateOpacity>
-								<Chart 
+								<Chart
 									yLabel="Likes"
 									data={{
 										counter: articleStats?.likeCounter,
-										stats: articleStats?.dailyLikes
-									}}/>
+										stats: articleStats?.dailyLikes,
+									}}
+								/>
 							</Collapse>
 							<Collapse in={isViewChartDisplayed} animateOpacity>
-								<Chart 
-									yLabel="Vues" 
+								<Chart
+									yLabel="Vues"
 									data={{
 										counter: articleStats?.viewCounter,
-										stats: articleStats?.dailyViews
-									}}/>
+										stats: articleStats?.dailyViews,
+									}}
+								/>
 							</Collapse>
 						</Grid>
 						<Editor value={content} readOnly={true} />

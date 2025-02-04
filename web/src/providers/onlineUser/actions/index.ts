@@ -11,7 +11,7 @@ const actions = {
 	articles,
 	anthologies,
 	topics,
-	statistics
+	statistics,
 };
 
 export default actions;

@@ -3,7 +3,13 @@ import * as React from 'react';
 import { Bar, ComposedChart, Label, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { DailyStats } from 'types/statistics';
 
-const Chart = ({ yLabel, data }: { yLabel: string; data: { counter: number | undefined ; stats: DailyStats[] | undefined } }) => {
+const Chart = ({
+	yLabel,
+	data,
+}: {
+	yLabel: string;
+	data: { counter: number | undefined; stats: DailyStats[] | undefined };
+}) => {
 	return (
 		<Box p="8px" background="gray.900" mt="4" rounded="md" shadow="md" width="100%">
 			<ResponsiveContainer width="100%" height={400}>
@@ -20,7 +26,7 @@ const Chart = ({ yLabel, data }: { yLabel: string; data: { counter: number | und
 				</ComposedChart>
 			</ResponsiveContainer>
 		</Box>
-	)
-}
+	);
+};
 
 export default Chart;

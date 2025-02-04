@@ -186,15 +186,15 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 					search: {
 						one: (id: number, callback: (ArticleStatistics: Stats) => void) =>
 							actions.online.statistics.articles.search.one(id, callback, onlineUser, uiContextValue.handleToast),
-					}
+					},
 				},
 				users: {
 					search: {
 						one: (id: number, callback: (ArticleStatistics: Stats) => void) =>
 							actions.online.statistics.users.search.one(id, callback, onlineUser, uiContextValue.handleToast),
-					}
-				}
-			}
+					},
+				},
+			},
 		},
 		offline: {
 			articles: {

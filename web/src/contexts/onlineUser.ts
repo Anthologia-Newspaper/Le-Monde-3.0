@@ -76,14 +76,14 @@ type OnlineUserContextType = {
 			articles: {
 				search: {
 					one: (id: number) => Promise<Handler<Stats>>;
-				}
+				};
 			};
 			users: {
 				search: {
 					one: (id: number) => Promise<Handler<Stats>>;
-				}
-			}
-		}
+				};
+			};
+		};
 	};
 };
 

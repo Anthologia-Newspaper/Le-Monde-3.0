@@ -83,7 +83,7 @@ const Writings = (): JSX.Element => {
 	useEffect(() => {
 		ui.online.articles.search.myArticles({}, (returnedArticles: Article[]) => setArticles(returnedArticles));
 		ui.online.statistics.users.search.one(onlineUser.data.id, setUserStats);
-		console.log("u stats", userStats)
+		console.log('u stats', userStats);
 	}, [refresh]);
 
 	useEffect(() => {
@@ -158,8 +158,8 @@ const Writings = (): JSX.Element => {
 							>
 								{userStats!.viewCounter} view{userStats!.viewCounter !== 1 && 's'}
 							</Badge>
-						</HStack>)
-					}
+						</HStack>
+					)}
 					<Grid
 						templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, minmax(0, 1fr));' }}
 						gap={{ base: 2, lg: 4 }}
@@ -170,16 +170,18 @@ const Writings = (): JSX.Element => {
 								yLabel="Likes"
 								data={{
 									counter: userStats?.likeCounter,
-									stats: userStats?.dailyLikes
-								}} />
+									stats: userStats?.dailyLikes,
+								}}
+							/>
 						</Collapse>
 						<Collapse in={isViewChartDisplayed} animateOpacity>
 							<Chart
 								yLabel="Vues"
 								data={{
 									counter: userStats?.viewCounter,
-									stats: userStats?.dailyViews
-								}} />
+									stats: userStats?.dailyViews,
+								}}
+							/>
 						</Collapse>
 					</Grid>
 				</VStack>
