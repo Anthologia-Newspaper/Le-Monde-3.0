@@ -18,6 +18,8 @@ import AnthologiesModal from 'components/modals/Anthologies';
 import Editor from 'components/Editor/Editor';
 import Chart from 'components/Chart/Chart';
 import { Stats } from 'types/statistics';
+import { OnlineUser } from 'types/user';
+import { useOnlineUserContext } from 'contexts/onlineUser';
 
 const ArticlePage = (): JSX.Element => {
 	const ui = useUIContext();
@@ -37,6 +39,7 @@ const ArticlePage = (): JSX.Element => {
 	const [articleStats, setArticleStats] = useState<Stats | undefined>(undefined);
 	const [isViewChartDisplayed, setViewChartDisplay] = useState(false);
 	const [isLikeChartDisplayed, setLikeChartDisplay] = useState(false);
+	const onlineUser = useOnlineUserContext();
 
 	// offline
 	const [offlineArticle, setOfflineArticle] = useState<OfflineArticle | undefined>(undefined);
@@ -48,13 +51,15 @@ const ArticlePage = (): JSX.Element => {
 	const [offlineLikedArticles, setOfflineLikedArticles] = useState<OfflineArticle[]>([]);
 
 	const toggleViewChartDisplay = () => {
-		setViewChartDisplay(!isViewChartDisplayed);
-		console.log("view:", isViewChartDisplayed)
+		if (onlineArticle?.author.id === onlineUser.data.id) {
+			setViewChartDisplay(!isViewChartDisplayed);
+		}
 	};
 
 	const toggleLikeChartDisplay = () => {
-		setLikeChartDisplay(!isLikeChartDisplayed);
-		console.log("like: ", isLikeChartDisplayed)
+		if (onlineArticle?.author.id === onlineUser.data.id) {
+			setLikeChartDisplay(!isLikeChartDisplayed);
+		}
 	};
 
 	const tryParseRawContent = (): YooptaContentValue | undefined => {
@@ -100,6 +105,7 @@ const ArticlePage = (): JSX.Element => {
 			ui.online.anthologies.search.many({ author: 'me' }, setOnlineAnthologies);
 			ui.online.articles.search.onePublication(+articleId!, setOnlineArticle, () => navigate('/bibliotheque'));
 			ui.online.statistics.articles.search.one(+articleId!, setArticleStats);
+			ui.online.user.me();
 		} else {
 			if (offlineUser.articlesCatalog.length !== 0 && offlineUser.articlesCatalog[0] !== undefined) {
 				ui.offline.articles.search.one(articleId!, setOfflineArticle);
