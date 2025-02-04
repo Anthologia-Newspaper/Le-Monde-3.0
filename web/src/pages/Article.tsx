@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Badge, CircularProgress, HStack, Text, Tooltip, useDisclosure, VStack } from '@chakra-ui/react';
+import { Badge, CircularProgress, Collapse, Grid, HStack, Text, Tooltip, useDisclosure, VStack } from '@chakra-ui/react';
 import { FcLikePlaceholder } from 'react-icons/fc';
 import { FaFolderPlus } from 'react-icons/fa';
 import { FcLike } from 'react-icons/fc';
@@ -16,6 +16,8 @@ import { Article, OfflineArticle } from 'types/article';
 import frenchDate from 'utils/frenchDate';
 import AnthologiesModal from 'components/modals/Anthologies';
 import Editor from 'components/Editor/Editor';
+import Chart from 'components/Chart/Chart';
+import { Stats } from 'types/statistics';
 
 const ArticlePage = (): JSX.Element => {
 	const ui = useUIContext();
@@ -32,6 +34,9 @@ const ArticlePage = (): JSX.Element => {
 	const [onlineArticle, setOnlineArticle] = useState<Article | undefined>(undefined);
 	const [onlineAnthologies, setOnlineAnthologies] = useState<Anthology[]>([]);
 	const [onlineLikedArticles, setOnlineLikedArticles] = useState<Article[]>([]);
+	const [articleStats, setArticleStats] = useState<Stats | undefined>(undefined);
+	const [isViewChartDisplayed, setViewChartDisplay] = useState(false);
+	const [isLikeChartDisplayed, setLikeChartDisplay] = useState(false);
 
 	// offline
 	const [offlineArticle, setOfflineArticle] = useState<OfflineArticle | undefined>(undefined);
@@ -41,6 +46,16 @@ const ArticlePage = (): JSX.Element => {
 	});
 	const [offlineAnthologies, setOfflineAnthologies] = useState<OfflineAnthology[]>([]);
 	const [offlineLikedArticles, setOfflineLikedArticles] = useState<OfflineArticle[]>([]);
+
+	const toggleViewChartDisplay = () => {
+		setViewChartDisplay(!isViewChartDisplayed);
+		console.log("view:", isViewChartDisplayed)
+	};
+
+	const toggleLikeChartDisplay = () => {
+		setLikeChartDisplay(!isLikeChartDisplayed);
+		console.log("like: ", isLikeChartDisplayed)
+	};
 
 	const tryParseRawContent = (): YooptaContentValue | undefined => {
 		try {
@@ -84,6 +99,7 @@ const ArticlePage = (): JSX.Element => {
 			ui.online.articles.search.likedPublications({}, setOnlineLikedArticles);
 			ui.online.anthologies.search.many({ author: 'me' }, setOnlineAnthologies);
 			ui.online.articles.search.onePublication(+articleId!, setOnlineArticle, () => navigate('/bibliotheque'));
+			ui.online.statistics.articles.search.one(+articleId!, setArticleStats);
 		} else {
 			if (offlineUser.articlesCatalog.length !== 0 && offlineUser.articlesCatalog[0] !== undefined) {
 				ui.offline.articles.search.one(articleId!, setOfflineArticle);
@@ -186,6 +202,7 @@ const ArticlePage = (): JSX.Element => {
 											colorScheme="green"
 											fontSize={{ base: 'small', lg: 'md' }}
 											borderRadius="xsm"
+											onClick={toggleLikeChartDisplay}
 											cursor={'pointer'}
 										>
 											{onlineArticle!.likeCounter} like{onlineArticle!.likeCounter !== 1 && 's'}
@@ -194,6 +211,7 @@ const ArticlePage = (): JSX.Element => {
 											colorScheme="blue"
 											fontSize={{ base: 'small', lg: 'md' }}
 											borderRadius="xsm"
+											onClick={toggleViewChartDisplay}
 											cursor="pointer"
 										>
 											{onlineArticle!.viewCounter} view{onlineArticle!.viewCounter !== 1 && 's'}
@@ -202,6 +220,28 @@ const ArticlePage = (): JSX.Element => {
 								)}
 							</HStack>
 						</VStack>
+						<Grid
+							templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, minmax(0, 1fr));' }}
+							gap={{ base: 2, lg: 4 }}
+							w="100%"
+						>
+							<Collapse in={isLikeChartDisplayed} animateOpacity>
+								<Chart 
+									yLabel="Likes"
+									data={{
+										counter: articleStats?.likeCounter,
+										stats: articleStats?.dailyLikes
+									}}/>
+							</Collapse>
+							<Collapse in={isViewChartDisplayed} animateOpacity>
+								<Chart 
+									yLabel="Vues" 
+									data={{
+										counter: articleStats?.viewCounter,
+										stats: articleStats?.dailyViews
+									}}/>
+							</Collapse>
+						</Grid>
 						<Editor value={content} readOnly={true} />
 						<Text variant="p" whiteSpace="pre-line" textAlign="justify"></Text>
 					</VStack>
