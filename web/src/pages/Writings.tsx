@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PlusSquareIcon } from '@chakra-ui/icons';
 import {
+	Badge,
 	Button,
 	CircularProgress,
+	Collapse,
 	Grid,
 	GridItem,
 	HStack,
@@ -29,10 +31,13 @@ import { useUIContext } from 'contexts/ui';
 import WriterArticleCard from 'components/Cards/WriterArticleCard';
 import SearchInput from 'components/Inputs/SearchInput';
 import { useOnlineUserContext } from 'contexts/onlineUser';
+import { Stats } from 'types/statistics';
+import Chart from 'components/Chart/Chart';
 
 const Writings = (): JSX.Element => {
 	const ui = useUIContext();
 	const onlineUser = useOnlineUserContext();
+	const [userStats, setUserStats] = useState<Stats | undefined>(undefined);
 	const navigate = useNavigate();
 	const { colorMode } = useColorMode();
 	const [refresh, setRefresh] = useState(1);
@@ -46,6 +51,8 @@ const Writings = (): JSX.Element => {
 	const [topics, setTopics] = useState<Topic[]>([]);
 	const [articles, setArticles] = useState<Article[]>([]);
 	const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
+	const [isViewChartDisplayed, setViewChartDisplay] = useState(false);
+	const [isLikeChartDisplayed, setLikeChartDisplay] = useState(false);
 
 	const sortAndFilterArticles = (articlesToSort: Article[]) => {
 		return articlesToSort
@@ -65,8 +72,18 @@ const Writings = (): JSX.Element => {
 			});
 	};
 
+	const toggleViewChartDisplay = () => {
+		setViewChartDisplay(!isViewChartDisplayed);
+	};
+
+	const toggleLikeChartDisplay = () => {
+		setLikeChartDisplay(!isLikeChartDisplayed);
+	};
+
 	useEffect(() => {
 		ui.online.articles.search.myArticles({}, (returnedArticles: Article[]) => setArticles(returnedArticles));
+		ui.online.statistics.users.search.one(onlineUser.data.id, setUserStats);
+		console.log("u stats", userStats)
 	}, [refresh]);
 
 	useEffect(() => {
@@ -101,23 +118,72 @@ const Writings = (): JSX.Element => {
 
 	return (
 		<VStack w="100%" spacing={{ base: '8px', md: '16px', lg: '24px', xl: '32px' }} align="start">
-			<HStack>
-				<Tag>
-					{articles.length} article{articles.length === 1 ? '' : 's'}
-				</Tag>
-				<HStack
-					cursor="pointer"
-					onClick={() => {
-						onlineUser.methods.extraData.setArticleToUpdate(undefined);
-						navigate('/ecrire');
-					}}
-				>
-					<Text variant="info">
-						<u>Ajouter</u>
-					</Text>
-					<PlusSquareIcon />
+			<VStack w="100%" align="start">
+				<HStack>
+					<Tag>
+						{articles.length} article{articles.length === 1 ? '' : 's'}
+					</Tag>
+					<HStack
+						cursor="pointer"
+						onClick={() => {
+							onlineUser.methods.extraData.setArticleToUpdate(undefined);
+							navigate('/ecrire');
+						}}
+					>
+						<Text variant="info">
+							<u>Ajouter</u>
+						</Text>
+						<PlusSquareIcon />
+					</HStack>
 				</HStack>
-			</HStack>
+
+				<VStack w="100%" align="start">
+					{userStats && (
+						<HStack>
+							<Badge
+								colorScheme="green"
+								fontSize={{ base: 'small', lg: 'md' }}
+								borderRadius="xsm"
+								onClick={toggleLikeChartDisplay}
+								cursor={'pointer'}
+							>
+								{userStats!.likeCounter} like{userStats!.likeCounter !== 1 && 's'}
+							</Badge>
+							<Badge
+								colorScheme="blue"
+								fontSize={{ base: 'small', lg: 'md' }}
+								borderRadius="xsm"
+								onClick={toggleViewChartDisplay}
+								cursor="pointer"
+							>
+								{userStats!.viewCounter} view{userStats!.viewCounter !== 1 && 's'}
+							</Badge>
+						</HStack>)
+					}
+					<Grid
+						templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, minmax(0, 1fr));' }}
+						gap={{ base: 2, lg: 4 }}
+						w="100%"
+					>
+						<Collapse in={isLikeChartDisplayed} animateOpacity>
+							<Chart
+								yLabel="Likes"
+								data={{
+									counter: userStats?.likeCounter,
+									stats: userStats?.dailyLikes
+								}} />
+						</Collapse>
+						<Collapse in={isViewChartDisplayed} animateOpacity>
+							<Chart
+								yLabel="Vues"
+								data={{
+									counter: userStats?.viewCounter,
+									stats: userStats?.dailyViews
+								}} />
+						</Collapse>
+					</Grid>
+				</VStack>
+			</VStack>
 			<VStack w="100%" align="start">
 				<HStack flexWrap="wrap">
 					<Tooltip label="Filtrer par mots-clés et/ou sujet">
