@@ -18,6 +18,7 @@ import {
 	ParamsUserUpdatePassword,
 	ResponseEmpty,
 } from 'types/services';
+import { Stats } from 'types/statistics';
 
 type OnlineUserContextType = {
 	data: OnlineUser;
@@ -71,6 +72,18 @@ type OnlineUserContextType = {
 				all: () => Promise<Handler<Topic[]>>;
 			};
 		};
+		statistics: {
+			articles: {
+				search: {
+					one: (id: number) => Promise<Handler<Stats>>;
+				}
+			};
+			users: {
+				search: {
+					one: (id: number) => Promise<Handler<Stats>>;
+				}
+			}
+		}
 	};
 };
 

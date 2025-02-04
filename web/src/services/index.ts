@@ -6,6 +6,7 @@ import user from './user';
 import articles from './articles';
 import anthologies from './anthologies';
 import topics from './topics';
+import statistics from './statistics';
 
 const servicesURL = axios.create({
 	withCredentials: true,
@@ -19,6 +20,7 @@ const services = {
 	articles,
 	anthologies,
 	topics,
+	statistics,
 };
 
 export { servicesURL };

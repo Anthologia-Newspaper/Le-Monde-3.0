@@ -104,6 +104,18 @@ const UserProvider = ({ children }: { children: JSX.Element }) => {
 					all: () => actions.topics.search.all(),
 				},
 			},
+			statistics: {
+				articles: {
+					search: {
+						one: (id: number) => actions.statistics.articles.search.one(id),
+					}
+				},
+				users: {
+					search: {
+						one: (id: number) => actions.statistics.users.search.one(id),
+					}
+				}
+			}
 		},
 	};
 

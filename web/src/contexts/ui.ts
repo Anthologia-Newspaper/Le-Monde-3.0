@@ -15,6 +15,7 @@ import {
 	ParamsAuthSignUp,
 	ParamsUserUpdatePassword,
 } from 'types/services';
+import { Stats } from 'types/statistics';
 
 type UIContextType = {
 	handleToast: ({ res, settings, messages }: UIHandling) => void;
@@ -68,6 +69,18 @@ type UIContextType = {
 				all: (callback: (topics: Topic[]) => void) => Promise<void>;
 			};
 		};
+		statistics: {
+			articles: {
+				search: {
+					one: (id: number, callback: (ArticleStatistics: Stats) => void) => Promise<void>;
+				}
+			};
+			users: {
+				search: {
+					one: (id: number, callback: (UserStatistics: Stats) => void) => Promise<void>;
+				}
+			}
+		}
 	};
 	offline: {
 		articles: {
