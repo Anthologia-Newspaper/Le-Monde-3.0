@@ -3,6 +3,7 @@ import articles from './articles';
 import auth from './auth';
 import topics from './topics';
 import user from './user';
+import statistics from './statistics';
 
 const online = {
 	auth,
@@ -10,6 +11,7 @@ const online = {
 	articles,
 	anthologies,
 	topics,
+	statistics,
 };
 
 export default online;

@@ -21,6 +21,7 @@ import {
 	ParamsUserUpdatePassword,
 } from 'types/services';
 import actions from './actions';
+import { Stats } from 'types/statistics';
 
 const UIProvider = ({ children }: { children: JSX.Element }) => {
 	const toast = useToast();
@@ -180,6 +181,20 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 						actions.online.topics.search.all(callback, onlineUser, uiContextValue.handleToast),
 				},
 			},
+			statistics: {
+				articles: {
+					search: {
+						one: (id: number, callback: (ArticleStatistics: Stats) => void) =>
+							actions.online.statistics.articles.search.one(id, callback, onlineUser, uiContextValue.handleToast),
+					}
+				},
+				users: {
+					search: {
+						one: (id: number, callback: (ArticleStatistics: Stats) => void) =>
+							actions.online.statistics.users.search.one(id, callback, onlineUser, uiContextValue.handleToast),
+					}
+				}
+			}
 		},
 		offline: {
 			articles: {
