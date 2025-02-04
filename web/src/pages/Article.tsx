@@ -263,7 +263,15 @@ const ArticlePage = (): JSX.Element => {
 						<Text variant="p" whiteSpace="pre-line" textAlign="justify"></Text>
 					</VStack>
 					<VStack align="left" spacing="0px" w="100%">
-						<Text variant="h6">
+						<Text
+							variant="h6"
+							cursor="pointer"
+							onClick={() => {
+								if (!user.data.isOffline) {
+									navigate(`/auteurs/${onlineArticle!.author.id}`);
+								}
+							}}
+						>
 							Écrit par {user.data.isOffline ? offlineArticle!.author : onlineArticle!.author.username}
 						</Text>
 						<Text variant="p">
