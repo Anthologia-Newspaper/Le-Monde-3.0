@@ -1,4 +1,5 @@
 import me from './me';
+import { one } from './search';
 import { username, email, password } from './update';
 
 const user = {
@@ -7,6 +8,9 @@ const user = {
 		username,
 		email,
 		password,
+	},
+	search: {
+		one,
 	},
 };
 

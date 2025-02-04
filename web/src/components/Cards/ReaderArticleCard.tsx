@@ -23,7 +23,8 @@ import readingTime from 'reading-time';
 
 const ReaderArticleCard = ({
 	navigateUrl,
-	author,
+	authorName,
+	authorId,
 	rawContent,
 	date,
 	title,
@@ -37,7 +38,8 @@ const ReaderArticleCard = ({
 	removeFromFavoritesAction,
 }: {
 	navigateUrl: string;
-	author: string;
+	authorName: string;
+	authorId?: number;
 	rawContent: string;
 	date: string;
 	likes: number;
@@ -123,8 +125,17 @@ const ReaderArticleCard = ({
 					<VStack align="start" spacing="0px" w="100%">
 						<Heading size="md">{title}</Heading>
 						<HStack w="100%" justify="space-between">
-							<Text variant="info" color="gray.400">
-								@{author}
+							<Text
+								variant="info"
+								color="gray.400"
+								onClick={(e) => {
+									if (authorId) {
+										e.stopPropagation();
+										navigate(`/auteurs/${authorId}`);
+									}
+								}}
+							>
+								@{authorName}
 							</Text>
 							<Text variant="info" color="gray.400">
 								{date}

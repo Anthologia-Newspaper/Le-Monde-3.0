@@ -44,6 +44,9 @@ type OnlineUserContextType = {
 				email: (newEmail: string) => Promise<Handler<ResponseEmpty>>;
 				username: (newUsername: string) => Promise<Handler<ResponseEmpty>>;
 			};
+			search: {
+				one: (id: number) => Promise<Handler<OnlineUser>>;
+			};
 		};
 		articles: {
 			create: (params: ParamsArticlesCreate) => Promise<Handler<Article>>;

@@ -83,7 +83,6 @@ const Writings = (): JSX.Element => {
 	useEffect(() => {
 		ui.online.articles.search.myArticles({}, (returnedArticles: Article[]) => setArticles(returnedArticles));
 		ui.online.statistics.users.search.one(onlineUser.data.id, setUserStats);
-		console.log('u stats', userStats);
 	}, [refresh]);
 
 	useEffect(() => {

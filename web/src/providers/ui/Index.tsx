@@ -22,6 +22,7 @@ import {
 } from 'types/services';
 import actions from './actions';
 import { Stats } from 'types/statistics';
+import { OnlineUser } from 'types/user';
 
 const UIProvider = ({ children }: { children: JSX.Element }) => {
 	const toast = useToast();
@@ -120,6 +121,10 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
 						actions.online.user.update.email(newEmail, onlineUser, uiContextValue.handleToast),
 					username: (newUsername: string) =>
 						actions.online.user.update.username(newUsername, onlineUser, uiContextValue.handleToast),
+				},
+				search: {
+					one: (id: number, successCallback: (onlineUser: OnlineUser) => void, errorCallback) =>
+						actions.online.user.search.one(id, successCallback, errorCallback, onlineUser, uiContextValue.handleToast),
 				},
 			},
 			articles: {

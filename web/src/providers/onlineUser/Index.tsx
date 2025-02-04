@@ -76,6 +76,9 @@ const UserProvider = ({ children }: { children: JSX.Element }) => {
 					username: (newUsername: string) =>
 						actions.user.update.username({ newUsername, callback: data.updateUsername }),
 				},
+				search: {
+					one: (id: number) => actions.user.search.one(id),
+				},
 			},
 			articles: {
 				create: (params: ParamsArticlesCreate) => actions.articles.create(params),

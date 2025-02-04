@@ -1,52 +1,250 @@
 import * as React from 'react';
-import { useState } from 'react';
-import { Badge, Select, Stack, Text, VStack } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import {
+	Button,
+	CircularProgress,
+	Grid,
+	GridItem,
+	HStack,
+	Icon,
+	Select,
+	Stack,
+	Tag,
+	Text,
+	Tooltip,
+	useColorMode,
+	useDisclosure,
+	VStack,
+} from '@chakra-ui/react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { FcLike } from 'react-icons/fc';
+import { FaEye, FaSort, FaSortDown, FaSortUp } from 'react-icons/fa';
 
+import { Topic } from 'types/topic';
+import { Article } from 'types/article';
+import { OnlineUser } from 'types/user';
+import { Anthology } from 'types/anthology';
+import { useUIContext } from 'contexts/ui';
+import { useUserContext } from 'contexts/user';
 import SearchInput from 'components/Inputs/SearchInput';
+import ReaderArticleCard from 'components/Cards/ReaderArticleCard';
+import AnthologiesModal from 'components/modals/Anthologies';
 
 const Author = (): JSX.Element => {
+	const { authorId } = useParams();
+	const navigate = useNavigate();
+	const ui = useUIContext();
+	const user = useUserContext();
+	const [onlineUser, setOnlineUser] = useState<OnlineUser | undefined>(undefined);
+	const { colorMode } = useColorMode();
+	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [search, setSearch] = useState('');
+	const [refresh, setRefresh] = useState(1);
+	const [sortLikes, setSortLikes] = useState<'UP' | 'DOWN' | 'NONE'>('NONE');
+	const [sortViews, setSortViews] = useState<'UP' | 'DOWN' | 'NONE'>('NONE');
+	const [onlineTopics, setOnlineTopics] = useState<Topic[]>([]);
+	const [onlineTopic, setOnlineTopic] = useState<Topic | undefined>();
+	const [onlineArticles, setOnlineArticles] = useState<Article[]>([]);
+	const [onlineUserArticles, setOnlineUserArticles] = useState<Article[]>([]);
+	const [onlineLikedArticles, setOnlineLikedArticles] = useState<Article[]>([]);
+	const [onlineAnthologies, setOnlineAnthologies] = useState<Anthology[]>([]);
+	const [onlineArticleToAdd, setOnlineArticleToAdd] = useState<number | undefined>(undefined);
+
+	const filterArticles = (articles: Article[]) => {
+		return articles.sort((a, b) => {
+			if (sortLikes === 'UP') return b.likeCounter - a.likeCounter;
+			if (sortLikes === 'DOWN') return a.likeCounter - b.likeCounter;
+			if (sortViews === 'UP') return b.viewCounter - a.viewCounter;
+			if (sortViews === 'DOWN') return a.viewCounter - b.viewCounter;
+			return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+		});
+	};
+
+	useEffect(() => {
+		if (onlineUser !== undefined) {
+			ui.online.articles.search.allPublications(
+				{ author: onlineUser.id, query: search, topic: onlineTopic?.id },
+				setOnlineArticles,
+			);
+			ui.online.articles.search.allPublications(
+				{ author: onlineUser.id, query: search, topic: onlineTopic?.id },
+				setOnlineUserArticles,
+			);
+			ui.online.articles.search.likedPublications(
+				{ author: onlineUser.id, query: search, topic: onlineTopic?.id },
+				setOnlineLikedArticles,
+			);
+			ui.online.anthologies.search.many({ author: 'me' }, setOnlineAnthologies);
+			ui.online.topics.search.all((topics: Topic[]) => {
+				setOnlineTopics(topics.filter((t) => onlineArticles.find((a) => a.topic.id === t.id)));
+			});
+		}
+	}, [onlineUser, refresh]);
+
+	useEffect(() => {
+		if (onlineUser !== undefined) {
+			ui.online.topics.search.all((topics: Topic[]) => {
+				setOnlineTopics(topics.filter((t) => onlineUserArticles.find((a) => a.topic.id === t.id)));
+			});
+		}
+	}, [onlineUserArticles]);
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			if (onlineUser !== undefined) {
+				ui.online.articles.search.allPublications(
+					{ author: onlineUser.id, query: search, topic: onlineTopic?.id },
+					setOnlineArticles,
+				);
+			}
+		}, 0.7 * 1000);
+		return () => {
+			clearTimeout(timer);
+		};
+	}, [search, onlineTopic]);
+
+	useEffect(() => {
+		if (user.data.isOffline) {
+			navigate('/');
+		} else {
+			ui.online.user.search.one(+authorId!, setOnlineUser, () => navigate('/bibliotheque'));
+		}
+	}, []);
+
+	if (user.data.isOffline || onlineUser === undefined) {
+		return (
+			<VStack w="100%" h="100%" justify="center">
+				<CircularProgress size="120px" isIndeterminate />
+			</VStack>
+		);
+	}
 
 	return (
-		<VStack align="start" w="100%" spacing={{ base: '24px', md: '32px', lg: '40px' }}>
-			<VStack w="100%">
-				{/* // TODO: username et autres */}
-				<Text variant="h4">Username</Text>
-				<Stack direction={{ base: 'column', md: 'row' }}>
-					<Badge colorScheme="red" variant="solid" fontSize={{ base: 'small', lg: 'md' }} borderRadius="xsm">
-						0 articles publiés - 0 j'aimes
-					</Badge>
-					<Badge colorScheme="pink" variant="solid" fontSize={{ base: 'small', lg: 'md' }} borderRadius="xsm">
-						0 articles aimés
-					</Badge>
-					<Badge colorScheme="green" variant="solid" fontSize={{ base: 'small', lg: 'md' }} borderRadius="xsm">
-						0 marque-pages
-					</Badge>
+		<>
+			<VStack w="100%" spacing={{ base: '8px', md: '12px', lg: '16px' }} align="start">
+				<Text variant="h6" fontWeight="bold">
+					@{onlineUser.username}
+				</Text>
+				<Stack w="100%" direction={{ base: 'column', sm: 'row' }}>
+					<SearchInput
+						value={search}
+						w={{ base: '100%', md: '560px' }}
+						placeholder="Cherchez un ou plusieurs mots-clés"
+						onChange={(e) => setSearch(e.target.value)}
+					/>
+					<Select
+						flexGrow={1}
+						onChange={(e) => {
+							setOnlineTopic(onlineTopics.find((t) => t.name === e.target.value));
+						}}
+						value={onlineTopic?.name}
+						sx={{
+							'> option': {
+								background: '#212529',
+							},
+						}}
+					>
+						<option value="">-- Tous --</option>
+						{onlineTopics.map((t, index) => (
+							<option key={index}>{t.name}</option>
+						))}
+					</Select>
 				</Stack>
+				<HStack>
+					<Tag>{`${onlineArticles.length} article${onlineArticles.length === 1 ? '' : 's'}`}</Tag>
+					<>
+						<Tooltip label="Trier en fonction du nombre de vues">
+							<Button
+								onClick={() => {
+									setSortViews('NONE');
+									if (sortLikes === 'NONE') setSortLikes('UP');
+									else if (sortLikes === 'UP') setSortLikes('DOWN');
+									else setSortLikes('NONE');
+								}}
+								bg={sortLikes === 'NONE' ? 'none' : colorMode === 'dark' ? 'whiteAlpha.200' : 'gray.100'}
+							>
+								<Icon
+									as={sortLikes === 'NONE' ? FaSort : sortLikes === 'UP' ? FaSortUp : FaSortDown}
+									boxSize={4}
+									mr="8px"
+								/>
+								<FcLike />
+							</Button>
+						</Tooltip>
+						<Tooltip label="Trier en fonction du nombre de likes">
+							<Button
+								onClick={() => {
+									setSortLikes('NONE');
+									if (sortViews === 'NONE') setSortViews('UP');
+									else if (sortViews === 'UP') setSortViews('DOWN');
+									else setSortViews('NONE');
+								}}
+								bg={sortViews === 'NONE' ? 'none' : colorMode === 'dark' ? 'whiteAlpha.200' : 'gray.100'}
+							>
+								<Icon
+									as={sortViews === 'NONE' ? FaSort : sortViews === 'UP' ? FaSortUp : FaSortDown}
+									boxSize={4}
+									mr="8px"
+								/>
+								<FaEye />
+							</Button>
+						</Tooltip>
+					</>
+				</HStack>
+				<Grid templateColumns="repeat(auto-fill, minmax(280px, 1fr))" gap={4} w="100%">
+					{filterArticles(onlineArticles).map((article, index) => (
+						<GridItem key={index.toString()}>
+							<ReaderArticleCard
+								navigateUrl={`/articles/${article.id}`}
+								title={article.title}
+								authorName={article.author.username}
+								authorId={article.author.id}
+								date={new Date(article.createdAt).toLocaleDateString('fr-FR')}
+								topic={article.topic.name}
+								rawContent={article.rawContent}
+								likes={article.likeCounter}
+								views={article.viewCounter}
+								isLiked={onlineLikedArticles.find((a) => a.id === article.id) !== undefined}
+								addToFolderAction={async () => {
+									setOnlineArticleToAdd(article.id);
+									onOpen();
+								}}
+								addToFavoritesAction={async () => {
+									ui.online.articles.like({ id: article.id, isLiked: false }, () => setRefresh((r) => r + 1));
+								}}
+								removeFromFavoritesAction={async () => {
+									ui.online.articles.like({ id: article.id, isLiked: true }, () => setRefresh((r) => r + 1));
+								}}
+							/>
+						</GridItem>
+					))}
+				</Grid>
 			</VStack>
-			<Stack align="start" direction={{ base: 'column', md: 'row' }} w="100%">
-				<Select
-					variant="primary-1"
-					sx={{
-						'> option': {
-							background: '#212529',
-						},
-					}}
-				>
-					<option>Articles publiés</option>
-					<option>Articles aimés</option>
-					<option>Marque-pages</option>
-				</Select>
-				<SearchInput
-					value={search}
-					inputId="brouillons-search-input"
-					w="100%"
-					placeholder="Cherchez avec un mot clé"
-					onChange={(e) => setSearch(e.target.value)}
-					variant="primary-1"
-				/>
-			</Stack>
-		</VStack>
+
+			<AnthologiesModal
+				isOpen={isOpen}
+				onClose={onClose}
+				isOffline={user.data.isOffline}
+				onlineAnthologies={!user.data.isOffline ? onlineAnthologies : undefined}
+				createAnthology={async (name: string, description: string) =>
+					!user.data.isOffline
+						? await ui.online.anthologies.create({ name, description, isPublic: false }, async () =>
+								setRefresh((r) => r + 1),
+						  )
+						: ui.offline.anthologies.create({
+								params: { name, description },
+								callback: () => setRefresh((r) => r + 1),
+						  })
+				}
+				onlineAction={async (id: number) =>
+					await ui.online.anthologies.addArticle(id, onlineArticleToAdd!, async () => {
+						onClose();
+						setRefresh((r) => r + 1);
+					})
+				}
+				offlineAction={(id: string) => {}}
+			/>
+		</>
 	);
 };
 

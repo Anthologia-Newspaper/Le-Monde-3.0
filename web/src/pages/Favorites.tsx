@@ -209,7 +209,8 @@ const Favorites = (): JSX.Element => {
 									<ArticleCard
 										navigateUrl={`/articles/${article.id}`}
 										title={article.title}
-										author={article.author.username}
+										authorName={article.author.username}
+										authorId={article.author.id}
 										date={new Date(article.createdAt).toLocaleDateString('fr-FR')}
 										topic={article.topic.name}
 										rawContent={article.rawContent}
@@ -231,7 +232,7 @@ const Favorites = (): JSX.Element => {
 									<ArticleCard
 										navigateUrl={`/articles/${article.cid}`}
 										title={article.title}
-										author={article.author}
+										authorName={article.author}
 										date={new Date(article.createdAt).toLocaleDateString('fr-FR')}
 										topic={article.topic}
 										rawContent={article.preview}

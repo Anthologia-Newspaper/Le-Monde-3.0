@@ -16,6 +16,7 @@ import {
 	ParamsUserUpdatePassword,
 } from 'types/services';
 import { Stats } from 'types/statistics';
+import { OnlineUser } from 'types/user';
 
 type UIContextType = {
 	handleToast: ({ res, settings, messages }: UIHandling) => void;
@@ -34,6 +35,13 @@ type UIContextType = {
 				password: (params: ParamsUserUpdatePassword) => Promise<void>;
 				email: (newEmail: string) => Promise<void>;
 				username: (newUsername: string) => Promise<void>;
+			};
+			search: {
+				one: (
+					id: number,
+					successCallback: (onlineUser: OnlineUser) => void,
+					errorCallback: () => void,
+				) => Promise<void>;
 			};
 		};
 		articles: {

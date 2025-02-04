@@ -13,7 +13,7 @@ export type ParamsArticlesCreate = {
 };
 export type ParamsArticlesLike = { id: number; isLiked: boolean };
 export type ParamsArticlesSearch = {
-	author?: string;
+	author?: number;
 	draft?: boolean;
 	topic?: number;
 	isLiked?: boolean;
